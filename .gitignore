@@ -1,0 +1,15 @@
+.env
+*.env
+client_secret*.json
+token.json
+credentials.json
+site/data/*.json
+!site/data/.gitkeep
+!site/data/stats.sample.json
+__pycache__/
+*.pyc
+.venv/
+venv/
+.DS_Store
+.idea/
+.vscode/
