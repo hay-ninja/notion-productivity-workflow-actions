@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-07-24T06:00:00-07:00",
+  "today": { "due": 4, "done": 1 },
+  "weeks": [
+    { "week": "2026-22", "total": 9,  "done": 8 },
+    { "week": "2026-23", "total": 12, "done": 11 },
+    { "week": "2026-24", "total": 7,  "done": 7 },
+    { "week": "2026-25", "total": 14, "done": 10 },
+    { "week": "2026-26", "total": 11, "done": 9 },
+    { "week": "2026-27", "total": 8,  "done": 6 },
+    { "week": "2026-28", "total": 13, "done": 5 },
+    { "week": "2026-29", "total": 6,  "done": 2 }
+  ]
+}
