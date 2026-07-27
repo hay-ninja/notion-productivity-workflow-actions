@@ -9,9 +9,13 @@ Emits ONLY aggregate counts (no task titles), safe to publish and embed.
 from __future__ import annotations
 
 import json
+import logging
 import os
 
 import notion_lib as n
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "site", "data", "stats.json")
 DONE = "Done"
@@ -61,7 +65,7 @@ def main() -> None:
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w") as f:
         json.dump(payload, f, indent=2)
-    print(json.dumps(payload, indent=2))
+    logger.info(json.dumps(payload, indent=2))
 
 
 if __name__ == "__main__":

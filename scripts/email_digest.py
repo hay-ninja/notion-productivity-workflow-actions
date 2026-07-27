@@ -7,11 +7,15 @@ Evening run: digest + "tomorrow's top 3" so your brain pre-loads the next day
 from __future__ import annotations
 
 import argparse
+import logging
 
 import requests
 
 import notion_lib as n
 from google_lib import gmail_service
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 
 MAX_MESSAGES = 25
 EVENING_HOUR = 12  # runs at/after noon LA count as the evening digest
@@ -107,13 +111,13 @@ def main() -> None:
     today = n.today_la().isoformat()
     title = f"Digest {today} {now:%H:%M}"
     if args.dry_run:
-        print(f"[dry-run] would write digest {title!r} (evening={is_evening}):\n{body}")
+        logger.info("[dry-run] would write digest %r (evening=%s):\n%s", title, is_evening, body)
         return
     n.create_page(digests_db,
                   properties={"Name": {"title": [{"text": {"content": title}}]},
                               "Date": {"date": {"start": today}}},
                   children=_blocks(body))
-    print(f"Wrote {title!r} (evening={is_evening}).")
+    logger.info("Wrote %r (evening=%s).", title, is_evening)
 
 
 if __name__ == "__main__":

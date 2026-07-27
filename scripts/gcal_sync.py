@@ -11,10 +11,14 @@ never deletes events.
 from __future__ import annotations
 
 import argparse
+import logging
 from datetime import date, datetime, timedelta
 
 import notion_lib as n
 from google_lib import calendar_service
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 
 EVENT_ID_PROP = "GCal Event ID"
 DEFAULT_MINUTES = 30  # length of a timed task event
@@ -59,8 +63,8 @@ def main() -> None:
     if args.dry_run:
         would_update = sum(1 for t in tasks if n.read_text(t, EVENT_ID_PROP))
         would_create = len(tasks) - would_update
-        print(f"[dry-run] would sync {len(tasks)} task(s): "
-             f"{would_create} create, {would_update} update.")
+        logger.info("[dry-run] would sync %s task(s): %s create, %s update.",
+                    len(tasks), would_create, would_update)
         return
 
     cal = calendar_service()
@@ -75,12 +79,12 @@ def main() -> None:
                 updated += 1
                 continue
             except Exception as e:
-                print(f"update failed for {existing} ({e}); recreating")
+                logger.info("update failed for %s (%s); recreating", existing, e)
         ev = cal.events().insert(calendarId=calendar_id, body=body).execute()
         n.update_page(task["id"], {EVENT_ID_PROP: {"rich_text": [{"text": {"content": ev["id"]}}]}})
         created += 1
 
-    print(f"Sync complete: {created} created, {updated} updated, {len(tasks)} scanned.")
+    logger.info("Sync complete: %s created, %s updated, %s scanned.", created, updated, len(tasks))
 
 
 if __name__ == "__main__":

@@ -60,5 +60,11 @@ Append one entry per task. Format:
 ## [T7] --dry-run for every job — 2026-07-26T01:20:00
 - Changed: scripts/email_digest.py, scripts/deadline_reminders.py, scripts/gcal_sync.py, scripts/weekly_review.py, tests/test_dry_run.py (new)
 - Verify: pytest 30 passed, ruff check . passes
-- Commit: (pending)
+- Commit: 2200dd8
 - Notes/blockers: dry-run skips the single write/notify call in each script (create_page, ntfy_push x2, calendar events + update_page) and prints a summary instead; gcal_sync also skips constructing calendar_service() in dry-run since it isn't needed to compute the create/update counts.
+
+## [T8] Structured logging — 2026-07-26T01:35:00
+- Changed: scripts/{email_digest,deadline_reminders,gcal_sync,weekly_review,build_dashboard}.py
+- Verify: pytest 30 passed, ruff check . passes
+- Commit: (pending)
+- Notes/blockers: each script sets its own logging.basicConfig(INFO, one-line format) since each runs standalone via its own workflow step; messages kept equivalent to the prior print() output.

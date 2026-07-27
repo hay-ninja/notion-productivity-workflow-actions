@@ -56,7 +56,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
       normally, perform NO writes and NO notifications, print what would happen.
       Add a test asserting dry-run never calls the write helpers.
 
-- [ ] **T8 — Structured logging.**
+- [x] **T8 — Structured logging.**
       Replace bare `print()` in `scripts/` with the `logging` module (INFO to stdout,
       one-line format). Keep messages equivalent.
 

@@ -2,8 +2,12 @@
 from __future__ import annotations
 
 import argparse
+import logging
 
 import notion_lib as n
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 
 
 def _toggle_on(settings_db: str) -> bool:
@@ -25,7 +29,7 @@ def main() -> None:
     intern_db = n.env("NOTION_INTERNSHIPS_DB")
 
     if not _toggle_on(settings_db):
-        print("Weekly Review Ping is OFF — exiting silently.")
+        logger.info("Weekly Review Ping is OFF — exiting silently.")
         return
 
     today = n.today_la()
@@ -51,10 +55,10 @@ def main() -> None:
 
     body = "\n".join(lines)
     if args.dry_run:
-        print(f"[dry-run] would push weekly review notification:\n{body}")
+        logger.info("[dry-run] would push weekly review notification:\n%s", body)
         return
     n.ntfy_push(body, title="Weekly review", tags="rotating_light")
-    print(body)
+    logger.info(body)
 
 
 if __name__ == "__main__":

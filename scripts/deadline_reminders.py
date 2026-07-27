@@ -2,8 +2,12 @@
 from __future__ import annotations
 
 import argparse
+import logging
 
 import notion_lib as n
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 
 
 def _parse_args() -> argparse.Namespace:
@@ -25,7 +29,7 @@ def main() -> None:
     ]}, sorts=[{"property": "Due Date", "direction": "ascending"}])
 
     if not pages:
-        print("Nothing due in the next 3 days.")
+        logger.info("Nothing due in the next 3 days.")
         return
 
     lines = []
@@ -36,10 +40,10 @@ def main() -> None:
 
     body = "\n".join(lines)
     if args.dry_run:
-        print(f"[dry-run] would push notification {len(pages)} task(s) due soon:\n{body}")
+        logger.info("[dry-run] would push notification %s task(s) due soon:\n%s", len(pages), body)
         return
     n.ntfy_push(body, title=f"{len(pages)} task(s) due soon", tags="calendar")
-    print(body)
+    logger.info(body)
 
 
 if __name__ == "__main__":
