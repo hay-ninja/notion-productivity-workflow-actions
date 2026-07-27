@@ -42,5 +42,11 @@ Append one entry per task. Format:
 ## [T5] Retry and backoff — 2026-07-26T00:45:00
 - Changed: scripts/notion_lib.py (added `_request()` wrapper used by query_database/update_page/create_page), tests/test_retry.py (new)
 - Verify: pytest 24 passed, ruff check . passes
-- Commit: (pending)
+- Commit: 47d3f2f
 - Notes/blockers: public signatures of query_database/update_page/create_page unchanged; _request accepts an optional `session` for testability without touching real network.
+
+## [bugfix] Restore notion_lib.timedelta re-export — 2026-07-26T00:50:00
+- Changed: scripts/notion_lib.py
+- Verify: pytest 24 passed, ruff check . passes
+- Commit: (pending)
+- Notes/blockers: T3 removed `timedelta` from notion_lib.py's imports as an unused-import fix, but deadline_reminders.py, email_digest.py, weekly_review.py, and build_dashboard.py all call it as `n.timedelta(...)`. Restored the import with a `noqa: F401` explaining the re-export so ruff doesn't flag it again.

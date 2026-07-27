@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 import time
-from datetime import datetime, date
+from datetime import datetime, date, timedelta  # noqa: F401 — re-exported for callers as n.timedelta
 from zoneinfo import ZoneInfo
 
 import requests
