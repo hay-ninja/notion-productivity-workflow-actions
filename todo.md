@@ -60,7 +60,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
       Replace bare `print()` in `scripts/` with the `logging` module (INFO to stdout,
       one-line format). Keep messages equivalent.
 
-- [ ] **T9 — CI: lint and tests.**
+- [x] **T9 — CI: lint and tests.**
       Extend `.github/workflows/validate.yml` to install `requirements-dev.txt` then
       run `ruff check .` and `pytest -q`, keeping the existing compile/YAML/.env
       checks.

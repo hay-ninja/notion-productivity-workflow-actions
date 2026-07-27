@@ -30,3 +30,9 @@ jobs:
             echo "ERROR: .env is tracked"; exit 1
           fi
           echo "no .env tracked"
+      - name: Install dev dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+      - name: Lint
+        run: ruff check .
+      - name: Test
+        run: pytest -q

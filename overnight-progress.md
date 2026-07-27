@@ -66,5 +66,11 @@ Append one entry per task. Format:
 ## [T8] Structured logging — 2026-07-26T01:35:00
 - Changed: scripts/{email_digest,deadline_reminders,gcal_sync,weekly_review,build_dashboard}.py
 - Verify: pytest 30 passed, ruff check . passes
-- Commit: (pending)
+- Commit: a4fa7a8
 - Notes/blockers: each script sets its own logging.basicConfig(INFO, one-line format) since each runs standalone via its own workflow step; messages kept equivalent to the prior print() output.
+
+## [T9] CI lint and tests — 2026-07-26T01:45:00
+- Changed: .github/workflows/validate.yml
+- Verify: YAML parse OK, pytest 30 passed, ruff check . passes (same commands CI will run)
+- Commit: (pending)
+- Notes/blockers: kept the existing compile/YAML/.env steps and appended dependency install + ruff + pytest steps.
