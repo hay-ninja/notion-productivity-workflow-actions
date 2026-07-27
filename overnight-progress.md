@@ -30,5 +30,5 @@ Append one entry per task. Format:
 ## [T3] Dev tooling — 2026-07-26T00:15:00
 - Changed: requirements-dev.txt, pyproject.toml, tests/__init__.py; scripts/notion_lib.py (removed unused `timedelta` import — required for a clean ruff baseline)
 - Verify: pytest exits 5 (no tests yet, expected pre-T4), ruff check . passes
-- Commit: (pending)
+- Commit: a6a5f44
 - Notes/blockers: pyproject.toml pins [tool.ruff.lint] select to E4/E7/E9/F (ruff's conventional default) so the linter targets real errors/unused code rather than opinionated style rules across the whole existing codebase.
