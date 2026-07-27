@@ -2,8 +2,8 @@
 # LA 06:00 => UTC 13:00 (PDT).
 name: Dashboard - Build & Deploy Pages
 on:
-  schedule:
-    - cron: "0 13 * * *"
+  # schedule:
+  #   - cron: "0 13 * * *"
   workflow_dispatch:
 permissions:
   contents: read

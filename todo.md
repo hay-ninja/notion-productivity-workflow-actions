@@ -21,7 +21,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
       existing commits to `main`. This is the ONLY push to main.
       Verify: `gh repo view --web` resolves and history is intact.
 
-- [ ] **T2 — Disable cron schedules.**
+- [x] **T2 — Disable cron schedules.**
       Create and switch to branch `overnight/hardening`. In every file under
       `.github/workflows/` except `validate.yml`, comment out the `schedule:` block,
       leaving `workflow_dispatch`. Without secrets the crons fail every 15 minutes.

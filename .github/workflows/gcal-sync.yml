@@ -1,8 +1,8 @@
 # Job C - every 15 minutes.
 name: C - GCal Sync
 on:
-  schedule:
-    - cron: "*/15 * * * *"
+  # schedule:
+  #   - cron: "*/15 * * * *"
   workflow_dispatch:
 permissions:
   contents: read

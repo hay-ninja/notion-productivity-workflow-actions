@@ -20,3 +20,9 @@ Append one entry per task. Format:
 - Verify: n/a
 - Commit: n/a
 - Notes/blockers: Repo already has an origin remote (github.com/hay-ninja/notion-productivity-workflow-actions) with main pushed. Per operator decision, skipping repo creation/push — treating T1 as already satisfied by the existing origin. Proceeding to T2 on a new branch; no push to main performed this run.
+
+## [T2] Disable cron schedules — 2026-07-26T00:05:00
+- Changed: .github/workflows/{dashboard,deadline-reminders,email-digest,gcal-sync,weekly-review}.yml
+- Verify: YAML parse OK for all 6 workflow files, ruff n/a (no python changed)
+- Commit: (pending)
+- Notes/blockers: none
