@@ -3,55 +3,80 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Tasks Dashboard</title>
+<title>Progress</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
-  :root { --blue:#2f6fed; --ink:#1f2430; --muted:#6b7280; --card:#fff; }
-  * { box-sizing:border-box; }
-  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; color:var(--ink); }
-  .wrap { max-width:760px; margin:0 auto; padding:16px; }
-  .row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
-  .stat { flex:1 1 140px; background:var(--card); border:1px solid #e6e8ee; border-radius:14px; padding:14px 16px; }
-  .stat .n { font-size:30px; font-weight:700; color:var(--blue); line-height:1; }
-  .stat .l { font-size:12px; color:var(--muted); margin-top:6px; text-transform:uppercase; letter-spacing:.04em; }
-  .chart-card { background:var(--card); border:1px solid #e6e8ee; border-radius:14px; padding:16px; }
-  h1 { font-size:15px; margin:0 0 12px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
-  .foot { font-size:11px; color:var(--muted); margin-top:10px; text-align:right; }
+  :root{--blue:#2f6fed;--teal:#1d9e75;--ink:#1f2430;--muted:#6b7280;--card:#fff;--line:#e6e8ee;--track:#eceff5;}
+  @media (prefers-color-scheme: dark){
+    :root{--ink:#e8eaf0;--muted:#9aa1ad;--card:#191b1f;--line:#2a2d34;--track:#2a2d34;}
+    body{background:transparent;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:transparent}
+  .wrap{max-width:900px;margin:0 auto;padding:14px}
+  .rings{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .ring-card{flex:1 1 150px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;align-items:center;gap:14px}
+  .ring-meta .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .ring-meta .v{font-size:19px;font-weight:600;margin-top:2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+  h2{font-size:12px;margin:0 0 10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:13px}
+  .bar-row .nm{width:110px;color:var(--muted);text-transform:capitalize}
+  .bar-track{flex:1;height:9px;background:var(--track);border-radius:6px;overflow:hidden}
+  .bar-fill{height:100%;background:var(--blue);border-radius:6px}
+  .bar-row .ct{width:26px;text-align:right;font-variant-numeric:tabular-nums}
+  .foot{font-size:11px;color:var(--muted);text-align:right}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="row" id="stats"></div>
-  <div class="chart-card">
-    <h1>Tasks per week</h1>
-    <canvas id="weekChart" height="180"></canvas>
-    <div class="foot" id="foot"></div>
-  </div>
+  <div class="rings" id="rings"></div>
+  <div class="card"><h2>Open work by category</h2><div id="bytype"></div></div>
+  <div class="card"><h2>Tasks per week</h2><canvas id="wk" height="150"></canvas></div>
+  <div class="foot" id="foot"></div>
 </div>
 <script>
-async function load() {
-  let data;
-  for (const url of ["data/stats.json", "data/stats.sample.json"]) {
-    try { const r = await fetch(url, { cache: "no-store" }); if (r.ok) { data = await r.json(); break; } }
-    catch (e) {}
+function ring(pct, color, label, value){
+  var R=34, C=2*Math.PI*R, off=C*(1-pct/100);
+  return '<div class="ring-card">'
+    + '<svg width="86" height="86" viewBox="0 0 86 86">'
+    + '<circle cx="43" cy="43" r="'+R+'" fill="none" stroke="var(--track)" stroke-width="9"/>'
+    + '<circle cx="43" cy="43" r="'+R+'" fill="none" stroke="'+color+'" stroke-width="9"'
+    + ' stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"'
+    + ' transform="rotate(-90 43 43)"/>'
+    + '<text x="43" y="48" text-anchor="middle" font-size="18" font-weight="600" fill="var(--ink)">'+Math.round(pct)+'%</text>'
+    + '</svg>'
+    + '<div class="ring-meta"><div class="l">'+label+'</div><div class="v">'+value+'</div></div></div>';
+}
+async function load(){
+  var data;
+  for (const u of ["data/stats.json","data/stats.sample.json"]){
+    try{ const r=await fetch(u,{cache:"no-store"}); if(r.ok){ data=await r.json(); break; } }catch(e){}
   }
-  if (!data) { document.getElementById("foot").textContent = "No data yet."; return; }
-  const pct = data.today.due ? Math.round(100 * data.today.done / data.today.due) : 0;
-  document.getElementById("stats").innerHTML = [
-    { n: data.today.due, l: "Due today" },
-    { n: data.today.done, l: "Done today" },
-    { n: pct + "%", l: "Today complete" },
-  ].map(c => `<div class="stat"><div class="n">${c.n}</div><div class="l">${c.l}</div></div>`).join("");
-  new Chart(document.getElementById("weekChart"), {
-    type: "bar",
-    data: { labels: data.weeks.map(w => "W" + w.week.split("-")[1]),
-      datasets: [
-        { label:"Total", data:data.weeks.map(w=>w.total), backgroundColor:"#9dbcf7", borderRadius:6 },
-        { label:"Done",  data:data.weeks.map(w=>w.done),  backgroundColor:"#2f6fed", borderRadius:6 } ] },
-    options: { responsive:true, plugins:{legend:{position:"bottom",labels:{boxWidth:12}}},
-      scales:{ y:{beginAtZero:true,ticks:{precision:0}}, x:{grid:{display:false}} } }
-  });
-  document.getElementById("foot").textContent = "Updated " + new Date(data.generated_at).toLocaleString();
+  if(!data){ document.getElementById("foot").textContent="No data yet."; return; }
+  var t=data.today, w=data.week;
+  var tp = t.total ? 100*t.done/t.total : 0;
+  var wp = w.total ? 100*w.done/w.total : 0;
+  document.getElementById("rings").innerHTML =
+      ring(tp,"var(--blue)","Today", t.done+" / "+t.total+" done")
+    + ring(wp,"var(--teal)","This week", w.done+" / "+w.total+" done")
+    + ring(100,"var(--muted)","Open total", data.open_total+" tasks").replace(/>100%</,'>'+data.open_total+'<');
+
+  var bt=data.by_type||{}, max=Math.max(1,...Object.values(bt));
+  document.getElementById("bytype").innerHTML = Object.keys(bt).length
+    ? Object.entries(bt).map(([k,v])=>'<div class="bar-row"><span class="nm">'+k+'</span>'
+        +'<span class="bar-track"><span class="bar-fill" style="width:'+(100*v/max)+'%"></span></span>'
+        +'<span class="ct">'+v+'</span></div>').join('')
+    : '<div style="font-size:13px;color:var(--muted)">Nothing open.</div>';
+
+  new Chart(document.getElementById("wk"),{type:"bar",
+    data:{labels:data.weeks.map(x=>"W"+x.week.split("-")[1]),
+      datasets:[{label:"Total",data:data.weeks.map(x=>x.total),backgroundColor:"#9dbcf7",borderRadius:5},
+                {label:"Done",data:data.weeks.map(x=>x.done),backgroundColor:"#2f6fed",borderRadius:5}]},
+    options:{responsive:true,plugins:{legend:{position:"bottom",labels:{boxWidth:10,font:{size:11}}}},
+      scales:{y:{beginAtZero:true,ticks:{precision:0,font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});
+
+  document.getElementById("foot").textContent="Updated "+new Date(data.generated_at).toLocaleString();
 }
 load();
 </script>

@@ -121,10 +121,6 @@ def status_is_not(name: str, value: str) -> dict:
     return {"property": name, "status": {"does_not_equal": value}}
 
 
-def checkbox_is(name: str, value: bool) -> dict:
-    return {"property": name, "checkbox": {"equals": value}}
-
-
 def date_on_or_before(name: str, iso_day: str) -> dict:
     return {"property": name, "date": {"on_or_before": iso_day}}
 
@@ -134,13 +130,6 @@ def date_between(name: str, start: str, end: str) -> dict:
         {"property": name, "date": {"on_or_after": start}},
         {"property": name, "date": {"on_or_before": end}},
     ]}
-
-
-PRIORITY_RANK = {"High": 0, "Medium": 1, "Low": 2}
-
-
-def priority_rank(page: dict) -> int:
-    return PRIORITY_RANK.get(read_select(page, "Priority") or "", 3)
 
 
 def ntfy_push(message: str, title: str | None = None, tags: str | None = None) -> None:

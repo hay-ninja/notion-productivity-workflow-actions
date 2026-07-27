@@ -62,16 +62,13 @@ def tomorrow_top3() -> list[str]:
     tomorrow = (n.today_la() + n.timedelta(days=1)).isoformat()
     pages = n.query_database(tasks_db, {"and": [
         {"property": "Due Date", "date": {"on_or_before": tomorrow}},
-        n.checkbox_is("Archived", False),
         n.status_is_not("Status", "Done"),
     ]})
-    pages.sort(key=lambda p: (n.priority_rank(p), n.read_date(p, "Due Date") or "9999"))
+    pages.sort(key=lambda p: n.read_date(p, "Due Date") or "9999")
     out = []
     for p in pages[:3]:
-        pri = n.read_select(p, "Priority")
         due = (n.read_date(p, "Due Date") or "")[:10]
-        tag = f" [{pri}]" if pri else ""
-        out.append(f"{n.read_title(p) or '(untitled)'}{tag} — due {due}")
+        out.append(f"{n.read_title(p) or '(untitled)'} — due {due}")
     return out
 
 

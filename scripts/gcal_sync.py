@@ -32,7 +32,7 @@ def main() -> None:
 
     tasks = n.query_database(tasks_db, {"and": [
         {"property": "Due Date", "date": {"is_not_empty": True}},
-        n.checkbox_is("Archived", False),
+        n.status_is_not("Status", "Done"),
     ]})
 
     created = updated = 0
