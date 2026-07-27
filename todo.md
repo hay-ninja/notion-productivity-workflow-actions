@@ -44,7 +44,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
       change public signatures. Add `tests/test_retry.py` with a monkeypatched
       session — no real network.
 
-- [ ] **T6 — Dashboard aggregation tests.**
+- [x] **T6 — Dashboard aggregation tests.**
       `tests/test_dashboard.py`: monkeypatch `query_database` to return fixed page
       dicts and assert `build_dashboard` produces correct `today`, `week`,
       `open_total`, and `by_type` counts, including the zero-task case (no division
