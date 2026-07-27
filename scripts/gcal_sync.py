@@ -1,14 +1,23 @@
 """Job C — one-way Notion -> Google Calendar sync. Cron every 15 min.
 
-Writes the created event's ID back to the task's `GCal Event ID` so later runs
-update instead of duplicating. Deletions/archival do not remove existing events.
+Every task with a due date becomes one event on a single dedicated calendar:
+  * due date with no time  -> an all-day event on that date
+  * due date with a time   -> a timed event of DEFAULT_MINUTES starting then
+
+The created event's ID is written back to the task's `GCal Event ID` so later
+runs update the same event instead of creating duplicates. Sync is one-way and
+never deletes events.
 """
 from __future__ import annotations
+
+from datetime import date, datetime, timedelta
 
 import notion_lib as n
 from google_lib import calendar_service
 
 EVENT_ID_PROP = "GCal Event ID"
+DEFAULT_MINUTES = 30  # length of a timed task event
+TZ = "America/Los_Angeles"
 
 
 def _event_body(task: dict) -> dict:
@@ -16,12 +25,16 @@ def _event_body(task: dict) -> dict:
     body: dict = {"summary": n.read_title(task) or "(untitled task)",
                   "source": {"title": "Notion task", "url": task.get("url", "")}}
     if due and "T" in due:
-        body["start"] = {"dateTime": due, "timeZone": "America/Los_Angeles"}
-        body["end"] = {"dateTime": due, "timeZone": "America/Los_Angeles"}
+        start = datetime.fromisoformat(due)
+        end = start + timedelta(minutes=DEFAULT_MINUTES)
+        body["start"] = {"dateTime": start.isoformat(), "timeZone": TZ}
+        body["end"] = {"dateTime": end.isoformat(), "timeZone": TZ}
     else:
         day = (due or "")[:10]
+        # Google treats all-day end as exclusive, so end is the following day.
+        end_day = (date.fromisoformat(day) + timedelta(days=1)).isoformat()
         body["start"] = {"date": day}
-        body["end"] = {"date": day}
+        body["end"] = {"date": end_day}
     return body
 
 
