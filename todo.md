@@ -16,7 +16,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
 
 ---
 
-- [ ] **T1 — Publish to GitHub (main).**
+- [x] **T1 — Publish to GitHub (main).**
       Create the public repo `notion-productivity-system`, add the remote, push the
       existing commits to `main`. This is the ONLY push to main.
       Verify: `gh repo view --web` resolves and history is intact.
