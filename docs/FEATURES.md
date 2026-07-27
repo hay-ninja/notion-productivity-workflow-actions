@@ -14,16 +14,18 @@ Kept deliberately lean — every property earns its place:
 - **Name, Due Date, Status** — the core of a task.
 - **Type** — CS / academics / personal / social / scholarships / extracurricular.
   This is what the Home page view switchers filter on.
-- **Priority** (Low/Medium/High) — sorts your Today list and colors the pills.
+- **When** — a formula that color-codes each task by due date: 🔴 overdue, 🟡 today,
+  🔵 this week, ⚪ later, ✅ done. Updates itself, never blank.
 - **Course** — finer subject tags (comp sci, math, physics, GE).
 - **Note** — free text.
-- **Archived** — hides finished clutter; the auto-archive robot writes to it.
 - **GCal Event ID** (hidden) — lets the calendar sync update the right event instead
   of duplicating. You never touch this.
 - **Stats** + four 0/1 counter formulas — the free progress-ring engine.
 
-Removed as dead weight: Place, Done At (paid-only), Grade, and two unused helper
-formulas.
+Removed as dead weight: Place, Done At (paid-only), Grade, Priority (never used),
+Archived (redundant once views filter by status), and three unused helper formulas.
+Views hide finished work with a native Status filter (To-do + In progress), so there is
+no archive flag and no auto-archive job.
 
 ### Dashboard Stats
 One hidden row that sums the counters and renders progress for today and this week.
@@ -60,7 +62,6 @@ photos, then footer links.
   duplicates. One-way; doesn't delete events.
 - **D · Weekly review — Sunday 6:00 PM.** Only fires if the Notion checkbox is on.
   Pushes the week's tasks plus internship deadlines.
-- **E · Auto-archive — 3:00 AM.** Archives tasks Done more than 7 days.
 - **Dashboard — 6:00 AM.** Publishes aggregate counts as a Chart.js bar chart on
   GitHub Pages, embeddable in Notion.
 - **Validate (CI).** Runs on every push: scripts compile, YAML parses, no `.env`

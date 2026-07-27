@@ -6,12 +6,14 @@ Free plan. Timezone: America/Los_Angeles.
 - DB `fc4118b4-e0c5-4113-a6e7-3ffa5b9513c3` · ds `7fb507e6-6e7a-48d5-98bd-b7361fe55539`
 - **Name** (title), **Due Date** (date), **Status** (STATUS-type: Not started /
   In progress / Done), **Type** (multi-select: personal, academics, CS, social,
-  scholarships, extracurricular, nothing), **Priority** (select L/M/H),
-  **Course** (multi-select), **Note** (text), **Archived** (checkbox),
+  scholarships, extracurricular, nothing), **Course** (multi-select), **Note** (text), **When** (formula: date color-coding),
   **GCal Event ID** (text, hidden), **Stats** (relation -> Dashboard Stats).
 - Ring engine formulas: Due Today (n), Done Today (n), Due Week (n), Done Week (n) —
   0/1 counters, logic inlined, Done check = `format(prop("Status")) == "Done"`.
-- Removed 2026-07: Place, Done At, Grade, Days Until Due, Is This Week.
+- Removed 2026-07: Place, Done At, Grade, Days Until Due, Is This Week, Priority,
+  Archived, Open?.
+- Views hide finished work with a native **Status is To-do / In progress** filter set in
+  the UI (the view DSL cannot write status filters — see gotcha 2).
 
 ## Dashboard Stats
 - DB `1f3d1984-79a5-4e05-b154-d3d0e06a110b` · ds `db41793b-4cb0-4498-a7e9-bb37a5e62538`

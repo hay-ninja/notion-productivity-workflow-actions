@@ -26,7 +26,6 @@ The commit history is the build story.
 | B | Deadline reminders (due within 3 days) | 07:00 | Actions + ntfy |
 | C | Notion -> Google Calendar sync | every 15 min | Actions + GCal API |
 | D | Weekly review ping (toggle-gated) | Sun 18:00 | Actions + ntfy |
-| E | Auto-archive tasks Done > 7 days | 03:00 | Actions |
 | - | Dashboard data -> Pages chart | 06:00 | Actions + Pages |
 
 The 18:00 digest also appends **tomorrow's top 3** tasks — the habit tip that one

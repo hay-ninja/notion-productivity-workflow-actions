@@ -23,7 +23,6 @@ def main() -> None:
 
     open_tasks = n.query_database(tasks_db, {"and": [
         n.date_between("Due Date", today.isoformat(), week_end.isoformat()),
-        n.checkbox_is("Archived", False),
         n.status_is_not("Status", "Done"),
     ]}, sorts=[{"property": "Due Date", "direction": "ascending"}])
 

@@ -11,7 +11,6 @@ def main() -> None:
 
     pages = n.query_database(tasks_db, {"and": [
         n.date_between("Due Date", today.isoformat(), horizon.isoformat()),
-        n.checkbox_is("Archived", False),
         n.status_is_not("Status", "Done"),
     ]}, sorts=[{"property": "Due Date", "direction": "ascending"}])
 
@@ -23,9 +22,7 @@ def main() -> None:
     for p in pages:
         due = (n.read_date(p, "Due Date") or "")[:10]
         when = "today" if due == today.isoformat() else due
-        pri = n.read_select(p, "Priority")
-        tag = f" [{pri}]" if pri else ""
-        lines.append(f"- {n.read_title(p) or '(untitled)'}{tag} ({when})")
+        lines.append(f"- {n.read_title(p) or '(untitled)'} ({when})")
 
     body = "\n".join(lines)
     n.ntfy_push(body, title=f"{len(pages)} task(s) due soon", tags="calendar")

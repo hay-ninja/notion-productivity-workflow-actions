@@ -29,7 +29,7 @@ If that command fails, fix it before committing. Never commit red.
 
 - [ ] **T4 — Tests for pure helpers.**
       In `tests/test_notion_lib.py`, cover only functions needing no network:
-      `iso_week`, `priority_rank`, `status_is`, `status_is_not`, `checkbox_is`,
+      `iso_week`, `status_is`, `status_is_not`,
       `date_between`, `date_on_or_before`, and the `read_*` helpers using hand-built
       page dicts. Aim for ~15 focused assertions. Verify: `pytest -q` green.
 
@@ -43,7 +43,7 @@ If that command fails, fix it before committing. Never commit red.
 
 - [ ] **T6 — `--dry-run` for every job.**
       Add a `--dry-run` flag to `email_digest.py`, `deadline_reminders.py`,
-      `gcal_sync.py`, `weekly_review.py`, `auto_archive.py`. In dry-run: read normally
+      `gcal_sync.py`, `weekly_review.py`. In dry-run: read normally
       but perform NO writes and NO pushes — print what would happen instead. Use
       `argparse`. Verify: `pytest -q` green, plus a test asserting dry-run never calls
       the write helpers (monkeypatched).

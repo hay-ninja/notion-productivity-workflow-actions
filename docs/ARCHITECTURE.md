@@ -22,7 +22,6 @@ fine for daily jobs.
 | B reminders | tasks (due <= 3 days) | — | ntfy |
 | C gcal sync | tasks (with due dates) | tasks `GCal Event ID`, Google Calendar | — |
 | D weekly review | tasks + internships + settings toggle | — | ntfy (if on) |
-| E auto-archive | tasks (Done > 7 days) | tasks `Archived` | — |
 | dashboard | tasks (aggregates) | `site/data/stats.json` -> Pages | — |
 
 ## Chart embed flow
