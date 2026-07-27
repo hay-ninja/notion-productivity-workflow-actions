@@ -1,22 +1,19 @@
 # Notion Productivity System
 
-A free automation layer for a personal Notion productivity workspace (tasks,
-internships, daily digests, a progress dashboard). Notion stays the single source of
-truth; **GitHub Actions** runs the automation on a schedule with no server to
-maintain, and a **GitHub Pages** chart can be embedded back into Notion.
+lil side project for fun to help me stay on top of things -> complements my notion system v2
+want to learn how to use github actions a little for some automation purposes + dabble in some more github features like github pages
 
-> Built by Haydn (UCLA). Timezone: America/Los_Angeles.
+**GitHub Actions** runs the automation on a schedule and **GitHub Pages** is used for embedded charts for notion.
 
-**New here or returning after a break?** Read `docs/FEATURES.md` for a plain-language
-tour, then follow `docs/SETUP.md` to plug in your accounts.
+> Built by haydn (me).
 
 ## Why this exists
 
-Notion's free plan is capped: one chart per workspace, no database automations, no
-auto-relations. An earlier design used a self-hosted **n8n** container to fill those
-gaps — powerful, but a fragile box to keep alive. This repo replaces it with
+notion kinda sucks on free plan (or at least i can't figure out how to use it well).
+wanted to use n8n to do some automation and stuff, but honestly after some research i think this is better and easier
+
+this repo has
 **scheduled GitHub Actions**: free, versioned, and every run leaves a visible log.
-The commit history is the build story.
 
 ## What it does
 
@@ -28,8 +25,9 @@ The commit history is the build story.
 | D | Weekly review ping (toggle-gated) | Sun 18:00 | Actions + ntfy |
 | - | Dashboard data -> Pages chart | 06:00 | Actions + Pages |
 
-The 18:00 digest also appends **tomorrow's top 3** tasks — the habit tip that one
-protected focus block beats an elaborate system.
+plus has a feature: **tomorrow's top 3** tasks 
+
+^^ apparently supposed to be a good habit tip.
 
 ## Repo layout
 
@@ -49,7 +47,3 @@ protected focus block beats an elaborate system.
 2. Add each token from `.env.example` as a **GitHub Actions secret**.
 3. Push. Run each workflow manually from the **Actions** tab before trusting cron.
 4. Enable **Pages** (Settings -> Pages -> deploy from Actions) to publish the chart.
-
-## License
-
-MIT — see `LICENSE`.
