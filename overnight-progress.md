@@ -88,5 +88,21 @@ Append one entry per task. Format:
 ## [T10] Docs and handoff — 2026-07-26T01:55:00
 - Changed: WHEN-I-GET-BACK.md (new), README.md (Development section)
 - Verify: pytest 30 passed, ruff check . passes (docs-only change, verification re-run for safety)
-- Commit: (pending)
+- Commit: b7c88d6
 - Notes/blockers: none
+
+## [T11] Final sweep — 2026-07-26T02:00:00
+- Changed: todo.md, overnight-progress.md
+- Verify: pytest 30 passed, ruff check . passes; 12 commits on overnight/hardening ahead of main
+- Commit: (pending, this entry)
+- Notes/blockers: none
+
+## Summary
+
+All of T1–T11 are done. `overnight/hardening` is 12 commits ahead of `main`, all
+pushed, tests and lint green throughout. T1 was resolved by using the existing
+origin remote rather than creating a second public repo (see T1 entry and
+WHEN-I-GET-BACK.md). No pushes to `main`, no credentials touched, no Notion or
+Google workspace accessed. Nothing left to do beyond what's listed in
+WHEN-I-GET-BACK.md — mainly adding real secrets and re-enabling the cron
+schedules once they exist, and deciding whether to merge this branch to main.

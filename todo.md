@@ -71,7 +71,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
       hit overnight. Add a short "Development" section to `README.md` covering how to
       run tests and `--dry-run`.
 
-- [ ] **T11 — Final sweep.**
+- [x] **T11 — Final sweep.**
       Run the full verification once more, append a summary to
       `overnight-progress.md`, push, and STOP. Do not open a pull request. Do not
       merge to main.
