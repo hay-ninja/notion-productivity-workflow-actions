@@ -50,6 +50,30 @@ protected focus block beats an elaborate system.
 3. Push. Run each workflow manually from the **Actions** tab before trusting cron.
 4. Enable **Pages** (Settings -> Pages -> deploy from Actions) to publish the chart.
 
+## Development
+
+Install dev dependencies once:
+
+```
+pip install -r requirements.txt -r requirements-dev.txt
+```
+
+Run the test suite and linter:
+
+```
+pytest -q
+ruff check .
+```
+
+Every scheduled job script (`email_digest.py`, `deadline_reminders.py`, `gcal_sync.py`,
+`weekly_review.py`) accepts a `--dry-run` flag: it reads from Notion/Google normally
+but makes no writes and sends no notifications, printing what it would have done
+instead. Use it to sanity-check a change before letting cron run for real, e.g.:
+
+```
+python scripts/deadline_reminders.py --dry-run
+```
+
 ## License
 
 MIT — see `LICENSE`.

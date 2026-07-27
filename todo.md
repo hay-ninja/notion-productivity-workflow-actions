@@ -65,7 +65,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
       run `ruff check .` and `pytest -q`, keeping the existing compile/YAML/.env
       checks.
 
-- [ ] **T10 — Docs and handoff.**
+- [x] **T10 — Docs and handoff.**
       Write `WHEN-I-GET-BACK.md` at the repo root: an ordered list of what is left,
       every secret to create (where to get it, where to paste it), and any blockers
       hit overnight. Add a short "Development" section to `README.md` covering how to

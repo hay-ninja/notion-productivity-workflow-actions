@@ -13,6 +13,16 @@ Append one entry per task. Format:
 ## Suggestions
 (Anything you'd redesign but were told not to — record it here instead of doing it.)
 
+- `notion_lib.py` re-exports `timedelta` from `datetime` purely so callers can write
+  `n.timedelta(...)`. It's easy to break (T3 nearly did, see the bugfix entry above)
+  and saves only one import line per caller. Worth having each script import
+  `timedelta` directly from `datetime` instead, next time this file is touched.
+- Five near-identical `argparse`/`--dry-run`/`logging.basicConfig` blocks were added
+  across `email_digest.py`, `deadline_reminders.py`, `gcal_sync.py`,
+  `weekly_review.py`, and `build_dashboard.py` in T7/T8. A tiny shared `cli.py`
+  helper (parse args once, configure logging once) would remove the duplication,
+  but that's a new module and wasn't in scope for either task.
+
 ---
 
 ## [T1] Publish to GitHub (main) — 2026-07-26T00:00:00
@@ -72,5 +82,11 @@ Append one entry per task. Format:
 ## [T9] CI lint and tests — 2026-07-26T01:45:00
 - Changed: .github/workflows/validate.yml
 - Verify: YAML parse OK, pytest 30 passed, ruff check . passes (same commands CI will run)
-- Commit: (pending)
+- Commit: 4398eb4
 - Notes/blockers: kept the existing compile/YAML/.env steps and appended dependency install + ruff + pytest steps.
+
+## [T10] Docs and handoff — 2026-07-26T01:55:00
+- Changed: WHEN-I-GET-BACK.md (new), README.md (Development section)
+- Verify: pytest 30 passed, ruff check . passes (docs-only change, verification re-run for safety)
+- Commit: (pending)
+- Notes/blockers: none
