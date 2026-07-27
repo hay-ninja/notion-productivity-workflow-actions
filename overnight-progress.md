@@ -32,3 +32,9 @@ Append one entry per task. Format:
 - Verify: pytest exits 5 (no tests yet, expected pre-T4), ruff check . passes
 - Commit: a6a5f44
 - Notes/blockers: pyproject.toml pins [tool.ruff.lint] select to E4/E7/E9/F (ruff's conventional default) so the linter targets real errors/unused code rather than opinionated style rules across the whole existing codebase.
+
+## [T4] Tests for pure helpers — 2026-07-26T00:30:00
+- Changed: tests/test_notion_lib.py (new)
+- Verify: pytest 18 passed, ruff check . passes
+- Commit: (pending)
+- Notes/blockers: local Windows dev env needed `tzdata` and `requests`/google deps installed to import notion_lib.py at all (zoneinfo has no OS tz database on Windows); not added to requirements.txt since CI runs on ubuntu-latest with system tzdata — local-only setup note.

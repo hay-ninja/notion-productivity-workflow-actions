@@ -32,7 +32,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
       `[tool.ruff]` line-length 100, and `tests/__init__.py`.
       Verify: `pytest -q` runs and `ruff check .` passes.
 
-- [ ] **T4 — Tests for pure helpers.**
+- [x] **T4 — Tests for pure helpers.**
       `tests/test_notion_lib.py` covering only no-network functions: `iso_week`,
       `status_is`, `status_is_not`, `date_between`, `date_on_or_before`, and the
       `read_*` helpers using hand-built page dicts. ~15 focused assertions.
