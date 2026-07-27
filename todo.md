@@ -27,7 +27,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
       leaving `workflow_dispatch`. Without secrets the crons fail every 15 minutes.
       Verify: all workflow YAML still parses.
 
-- [ ] **T3 — Dev tooling.**
+- [x] **T3 — Dev tooling.**
       Add `requirements-dev.txt` (pytest, ruff), a `pyproject.toml` with
       `[tool.ruff]` line-length 100, and `tests/__init__.py`.
       Verify: `pytest -q` runs and `ruff check .` passes.

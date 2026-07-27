@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 from zoneinfo import ZoneInfo
 
 import requests
