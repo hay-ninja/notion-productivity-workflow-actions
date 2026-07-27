@@ -10,6 +10,7 @@ never deletes events.
 """
 from __future__ import annotations
 
+import argparse
 from datetime import date, datetime, timedelta
 
 import notion_lib as n
@@ -38,16 +39,31 @@ def _event_body(task: dict) -> dict:
     return body
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Read normally but make no writes or notifications.")
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = _parse_args()
     tasks_db = n.env("NOTION_TASKS_DB")
     calendar_id = n.env("GCAL_CALENDAR_ID")
-    cal = calendar_service()
 
     tasks = n.query_database(tasks_db, {"and": [
         {"property": "Due Date", "date": {"is_not_empty": True}},
         n.status_is_not("Status", "Done"),
     ]})
 
+    if args.dry_run:
+        would_update = sum(1 for t in tasks if n.read_text(t, EVENT_ID_PROP))
+        would_create = len(tasks) - would_update
+        print(f"[dry-run] would sync {len(tasks)} task(s): "
+             f"{would_create} create, {would_update} update.")
+        return
+
+    cal = calendar_service()
     created = updated = 0
     for task in tasks:
         existing = n.read_text(task, EVENT_ID_PROP)

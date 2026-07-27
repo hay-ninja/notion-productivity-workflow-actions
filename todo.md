@@ -50,7 +50,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
       `open_total`, and `by_type` counts, including the zero-task case (no division
       by zero). This is what the progress rings render, so it must be right.
 
-- [ ] **T7 — `--dry-run` for every job.**
+- [x] **T7 — `--dry-run` for every job.**
       Add an `argparse` `--dry-run` flag to `email_digest.py`,
       `deadline_reminders.py`, `gcal_sync.py`, `weekly_review.py`. In dry-run: read
       normally, perform NO writes and NO notifications, print what would happen.

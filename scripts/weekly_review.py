@@ -1,6 +1,8 @@
 """Job D — Sunday 18:00 LA review ping, gated by a Notion checkbox."""
 from __future__ import annotations
 
+import argparse
+
 import notion_lib as n
 
 
@@ -9,7 +11,15 @@ def _toggle_on(settings_db: str) -> bool:
                for row in n.query_database(settings_db))
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Read normally but make no writes or notifications.")
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = _parse_args()
     settings_db = n.env("NOTION_SETTINGS_DB")
     tasks_db = n.env("NOTION_TASKS_DB")
     intern_db = n.env("NOTION_INTERNSHIPS_DB")
@@ -40,6 +50,9 @@ def main() -> None:
               for p in deadlines[:8]]
 
     body = "\n".join(lines)
+    if args.dry_run:
+        print(f"[dry-run] would push weekly review notification:\n{body}")
+        return
     n.ntfy_push(body, title="Weekly review", tags="rotating_light")
     print(body)
 

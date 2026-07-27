@@ -6,6 +6,8 @@ Evening run: digest + "tomorrow's top 3" so your brain pre-loads the next day
 """
 from __future__ import annotations
 
+import argparse
+
 import requests
 
 import notion_lib as n
@@ -81,7 +83,15 @@ def _blocks(text: str) -> list[dict]:
     return blocks[:90]
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Read normally but make no writes or notifications.")
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = _parse_args()
     digests_db = n.env("NOTION_DIGESTS_DB")
     now = n.now_la()
     is_evening = now.hour >= EVENING_HOUR
@@ -96,6 +106,9 @@ def main() -> None:
 
     today = n.today_la().isoformat()
     title = f"Digest {today} {now:%H:%M}"
+    if args.dry_run:
+        print(f"[dry-run] would write digest {title!r} (evening={is_evening}):\n{body}")
+        return
     n.create_page(digests_db,
                   properties={"Name": {"title": [{"text": {"content": title}}]},
                               "Date": {"date": {"start": today}}},

@@ -54,5 +54,11 @@ Append one entry per task. Format:
 ## [T6] Dashboard aggregation tests — 2026-07-26T01:00:00
 - Changed: tests/test_dashboard.py (new)
 - Verify: pytest 26 passed, ruff check . passes
-- Commit: (pending)
+- Commit: 89b8473
 - Notes/blockers: monkeypatches n.query_database to branch on filter shape (date_between vs status_is_not) since build_dashboard.main() issues several date-window queries and one open-status query; covers both a populated fixture and the zero-task case.
+
+## [T7] --dry-run for every job — 2026-07-26T01:20:00
+- Changed: scripts/email_digest.py, scripts/deadline_reminders.py, scripts/gcal_sync.py, scripts/weekly_review.py, tests/test_dry_run.py (new)
+- Verify: pytest 30 passed, ruff check . passes
+- Commit: (pending)
+- Notes/blockers: dry-run skips the single write/notify call in each script (create_page, ntfy_push x2, calendar events + update_page) and prints a summary instead; gcal_sync also skips constructing calendar_service() in dry-run since it isn't needed to compute the create/update counts.
