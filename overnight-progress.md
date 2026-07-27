@@ -36,5 +36,11 @@ Append one entry per task. Format:
 ## [T4] Tests for pure helpers — 2026-07-26T00:30:00
 - Changed: tests/test_notion_lib.py (new)
 - Verify: pytest 18 passed, ruff check . passes
-- Commit: (pending)
+- Commit: 86e06fc
 - Notes/blockers: local Windows dev env needed `tzdata` and `requests`/google deps installed to import notion_lib.py at all (zoneinfo has no OS tz database on Windows); not added to requirements.txt since CI runs on ubuntu-latest with system tzdata — local-only setup note.
+
+## [T5] Retry and backoff — 2026-07-26T00:45:00
+- Changed: scripts/notion_lib.py (added `_request()` wrapper used by query_database/update_page/create_page), tests/test_retry.py (new)
+- Verify: pytest 24 passed, ruff check . passes
+- Commit: (pending)
+- Notes/blockers: public signatures of query_database/update_page/create_page unchanged; _request accepts an optional `session` for testability without touching real network.

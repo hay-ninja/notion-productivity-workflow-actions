@@ -37,7 +37,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
       `status_is`, `status_is_not`, `date_between`, `date_on_or_before`, and the
       `read_*` helpers using hand-built page dicts. ~15 focused assertions.
 
-- [ ] **T5 — Retry and backoff.**
+- [x] **T5 — Retry and backoff.**
       In `notion_lib.py` add a `_request()` wrapper used by `query_database`,
       `update_page`, `create_page`: up to 3 retries on HTTP 429 and 5xx with
       exponential backoff (1s, 2s, 4s), honouring `Retry-After` when present. Do not

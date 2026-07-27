@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import time
 from datetime import datetime, date
 from zoneinfo import ZoneInfo
 
@@ -40,6 +41,26 @@ def iso_week(d: date) -> str:
     return f"{y:04d}-{w:02d}"
 
 
+RETRYABLE_STATUS = {429, 500, 502, 503, 504}
+MAX_RETRIES = 3
+BACKOFF_SECONDS = (1, 2, 4)
+
+
+def _request(method: str, url: str, session: requests.Session | None = None,
+            **kwargs) -> requests.Response:
+    sender = session or requests
+    attempt = 0
+    while True:
+        r = sender.request(method, url, **kwargs)
+        if r.status_code not in RETRYABLE_STATUS or attempt >= MAX_RETRIES:
+            r.raise_for_status()
+            return r
+        retry_after = r.headers.get("Retry-After")
+        delay = float(retry_after) if retry_after else BACKOFF_SECONDS[attempt]
+        time.sleep(delay)
+        attempt += 1
+
+
 def query_database(database_id: str, filter_: dict | None = None,
                    sorts: list | None = None) -> list[dict]:
     results: list[dict] = []
@@ -50,8 +71,7 @@ def query_database(database_id: str, filter_: dict | None = None,
         payload["sorts"] = sorts
     url = f"{API}/databases/{database_id}/query"
     while True:
-        r = requests.post(url, headers=_headers(), json=payload, timeout=30)
-        r.raise_for_status()
+        r = _request("POST", url, headers=_headers(), json=payload, timeout=30)
         data = r.json()
         results.extend(data.get("results", []))
         if not data.get("has_more"):
@@ -61,9 +81,8 @@ def query_database(database_id: str, filter_: dict | None = None,
 
 
 def update_page(page_id: str, properties: dict) -> dict:
-    r = requests.patch(f"{API}/pages/{page_id}", headers=_headers(),
-                       json={"properties": properties}, timeout=30)
-    r.raise_for_status()
+    r = _request("PATCH", f"{API}/pages/{page_id}", headers=_headers(),
+                json={"properties": properties}, timeout=30)
     return r.json()
 
 
@@ -73,8 +92,7 @@ def create_page(parent_database_id: str, properties: dict,
                      "properties": properties}
     if children:
         payload["children"] = children
-    r = requests.post(f"{API}/pages", headers=_headers(), json=payload, timeout=30)
-    r.raise_for_status()
+    r = _request("POST", f"{API}/pages", headers=_headers(), json=payload, timeout=30)
     return r.json()
 
 
