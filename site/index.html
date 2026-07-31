@@ -3,9 +3,11 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark light" />
 <title>Progress</title>
 <style>
   :root{
+    color-scheme: light dark;
     --ink:#1f2430;
     --muted:#6b7280;
     --track:rgba(128,128,128,.22);
@@ -13,12 +15,19 @@
     --teal:#2bb98d;
     --gray:#9aa1ad;
   }
-  html[data-theme="dark"]{ --ink:#e8eaf0; --muted:#9aa1ad; --track:rgba(255,255,255,.14); }
+  html[data-theme="dark"]{
+    color-scheme: dark;
+    --ink:#e8eaf0; --muted:#9aa1ad; --track:rgba(255,255,255,.14);
+  }
+  html[data-theme="light"]{ color-scheme: light; }
   @media (prefers-color-scheme: dark){
     html:not([data-theme="light"]){ --ink:#e8eaf0; --muted:#9aa1ad; --track:rgba(255,255,255,.14); }
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:transparent;overflow:hidden}
+  html,body{
+    margin:0; padding:0; overflow:hidden;
+    background-color:transparent !important;
+  }
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     color:var(--ink);
@@ -32,7 +41,7 @@
   .l{font-size:11px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); white-space:nowrap}
   .v{font-size:16px; font-weight:600; margin-top:2px; white-space:nowrap}
   svg{display:block; flex:0 0 auto}
-  .stale{font-size:10px;color:var(--muted);text-align:center;padding-bottom:2px}
+  .stale{font-size:10px; color:var(--muted); text-align:center; padding-bottom:2px}
   @media (max-width:520px){
     .row{gap:4px}
     .l{font-size:10px}
@@ -45,8 +54,7 @@
 <div class="stale" id="stale"></div>
 <script>
 (function(){
-  var q = new URLSearchParams(location.search);
-  var t = q.get("theme");
+  var t = new URLSearchParams(location.search).get("theme");
   if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t);
 })();
 
@@ -77,15 +85,16 @@ async function load(){
   var wp = w.total ? 100*w.done/w.total : 0;
 
   document.getElementById("row").innerHTML =
-      ring(tp, "var(--blue)", "Today",      t.done + " / " + t.total + " done", Math.round(tp) + "%")
-    + ring(wp, "var(--teal)", "This week",  w.done + " / " + w.total + " done", Math.round(wp) + "%")
-    + ring(100, "var(--gray)","Open total", data.open_total + " tasks",         data.open_total);
+      ring(tp,  "var(--blue)", "Today",      t.done + " / " + t.total + " done", Math.round(tp) + "%")
+    + ring(wp,  "var(--teal)", "This week",  w.done + " / " + w.total + " done", Math.round(wp) + "%")
+    + ring(100, "var(--gray)", "Open total", data.open_total + " tasks",         data.open_total);
 
   var d = new Date(data.generated_at);
   var hrs = (Date.now() - d.getTime()) / 36e5;
   document.getElementById("stale").textContent =
-    (hrs > 30 ? "⚠ " : "") + "updated " + d.toLocaleDateString(undefined,{month:"short",day:"numeric"})
-    + " " + d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
+    (hrs > 30 ? "⚠ " : "") + "updated "
+    + d.toLocaleDateString(undefined,{month:"short",day:"numeric"}) + " "
+    + d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
 }
 load();
 </script>
