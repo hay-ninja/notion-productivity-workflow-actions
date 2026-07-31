@@ -11,13 +11,20 @@
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     display:flex; flex-direction:column; justify-content:center;
   }
-  .row{display:flex;align-items:center;justify-content:space-around;gap:8px;padding:4px;flex-wrap:nowrap}
-  .item{display:flex;align-items:center;gap:11px;min-width:0}
-  .l{font-size:11px;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
-  .v{font-size:16px;font-weight:600;margin-top:2px;white-space:nowrap}
-  svg{display:block;flex:0 0 auto}
+  .row{display:flex;align-items:center;justify-content:center;gap:8px;padding:4px;flex-wrap:nowrap}
+  .item{display:flex;align-items:center;justify-content:center;gap:11px;min-width:0;flex:1 1 0}
+  .item>div{min-width:0}
+  .l{font-size:11px;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .v{font-size:16px;font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  svg{display:block;flex:0 0 auto;width:74px;height:74px}
   .stale{font-size:10px;text-align:center;padding-top:2px}
-  @media (max-width:520px){ .row{gap:4px} .l{font-size:10px} .v{font-size:14px} }
+  @media (max-width:480px){
+    .row{gap:4px;padding:3px}
+    .item{gap:6px}
+    svg{width:48px;height:48px}
+    .l{font-size:9px}
+    .v{font-size:12px}
+  }
 </style>
 </head>
 <body>
@@ -35,7 +42,7 @@ var isDark = luminance < 0.5;
 
 var INK   = isDark ? "#e8eaf0" : "#1f2430";
 var MUTED = isDark ? "#9aa1ad" : "#6b7280";
-var TRACK = isDark ? "rgba(255,255,255,.16)" : "rgba(0,0,0,.13)";
+var TRACK = isDark ? "rgba(255,255,255,.16)" : "rgba(0,0,0,.20)";
 var BLUE  = isDark ? "#5b95f7" : "#2f6fed";
 var TEAL  = isDark ? "#31c398" : "#1d9e75";
 var GRAY  = isDark ? "#8d949f" : "#8a9099";
