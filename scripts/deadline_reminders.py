@@ -6,13 +6,6 @@ import notion_lib as n
 HORIZON_DAYS = 3
 
 
-def _line(page: dict, today_iso: str) -> str:
-    """One display line for a due task, showing "today" instead of the date when due today."""
-    due = n.read_due_day(page)
-    when = "today" if due == today_iso else due
-    return f"- {n.read_title_or(page)} ({when})"
-
-
 def main() -> None:
     """Push unfinished tasks due within HORIZON_DAYS to ntfy, oldest due date first."""
     tasks_db = n.env("NOTION_TASKS_DB")
@@ -28,7 +21,7 @@ def main() -> None:
         print(f"Nothing due in the next {HORIZON_DAYS} days.")
         return
 
-    body = "\n".join(_line(p, today.isoformat()) for p in pages)
+    body = "\n".join(n.format_task_line(p, today) for p in pages)
     n.ntfy_push(body, title=f"{len(pages)} task(s) due soon", tags="calendar")
     print(body)
 

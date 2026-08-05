@@ -13,17 +13,6 @@ def _toggle_on(settings_db: str) -> bool:
                for row in n.query_database(settings_db))
 
 
-def _task_lines(pages: list[dict]) -> list[str]:
-    """Up to MAX_LISTED task lines with their due date."""
-    return [f"  - {n.read_title(p)} ({n.read_due_day(p)})" for p in pages[:MAX_LISTED]]
-
-
-def _deadline_lines(pages: list[dict]) -> list[str]:
-    """Up to MAX_LISTED internship lines with their application deadline."""
-    return [f"  - {n.read_title(p, 'Company')} ({n.read_due_day(p, 'Application Deadline')})"
-            for p in pages[:MAX_LISTED]]
-
-
 def main() -> None:
     """If the review toggle is on, push this week's tasks and internship deadlines."""
     settings_db = n.env("NOTION_SETTINGS_DB")
@@ -48,11 +37,11 @@ def main() -> None:
         sorts=[{"property": "Application Deadline", "direction": "ascending"}],
     )
 
-    lines = [f"Week of {today.isoformat()}", "",
-             f"Tasks due this week: {len(open_tasks)}"]
-    lines += _task_lines(open_tasks)
+    lines = [f"Tasks due this week: {len(open_tasks)}"]
+    lines += [n.format_task_line(p, today) for p in open_tasks[:MAX_LISTED]]
     lines += ["", f"Internship deadlines: {len(deadlines)}"]
-    lines += _deadline_lines(deadlines)
+    lines += [n.format_task_line(p, today, title_prop="Company", due_prop="Application Deadline")
+              for p in deadlines[:MAX_LISTED]]
 
     body = "\n".join(lines)
     n.ntfy_push(body, title="Weekly review", tags="rotating_light")

@@ -78,6 +78,37 @@ def test_date_on_or_before_filter_shape():
     }
 
 
+TODAY = n.date(2026, 8, 5)  # Wednesday
+
+
+def test_urgency_emoji_overdue():
+    assert n.urgency_emoji("2026-08-04", TODAY) == "🔴"
+
+
+def test_urgency_emoji_today():
+    assert n.urgency_emoji("2026-08-05", TODAY) == "🟡"
+
+
+def test_urgency_emoji_plus_three_days():
+    assert n.urgency_emoji("2026-08-08", TODAY) == "🔵"
+
+
+def test_urgency_emoji_plus_thirty_days():
+    assert n.urgency_emoji("2026-09-04", TODAY) == "⚪"
+
+
+def test_format_task_line_omits_when_suffix_for_today():
+    page = _page("Write report", "2026-08-05")
+    assert n.format_task_line(page, TODAY) == "🟡 Write report"
+
+
+def test_format_task_line_includes_when_suffix_for_other_days():
+    tomorrow = _page("Submit form", "2026-08-06")
+    later = _page("Read chapter", "2026-08-26")
+    assert n.format_task_line(tomorrow, TODAY) == "🔵 Submit form — tomorrow"
+    assert n.format_task_line(later, TODAY) == "⚪ Read chapter — Aug 26"
+
+
 class _FakeResponse:
     def raise_for_status(self):
         pass
