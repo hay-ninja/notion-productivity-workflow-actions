@@ -34,7 +34,8 @@ def main() -> None:
     ]})
 
     body = body_for(top3_lines(pages, today))
-    n.ntfy_push(body, title="Tomorrow · top 3", tags="clipboard")
+    n.ntfy_push(body, title="Tomorrow · top 3", tags="clipboard",
+                click=n.NOTION_HOME_URL, actions=n.OPEN_TASKS_ACTION)
     print(body)
 
 

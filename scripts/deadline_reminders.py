@@ -24,7 +24,8 @@ def main() -> None:
     body = "\n".join(n.format_task_line(p, today) for p in pages)
     today_count = sum(1 for p in pages if n.task_urgency(n.read_due_day(p), today) == "today")
     title = f"Due soon · {today_count} today" if today_count else "Due soon"
-    n.ntfy_push(body, title=title, tags="calendar")
+    n.ntfy_push(body, title=title, tags="calendar",
+                click=n.NOTION_HOME_URL, actions=n.OPEN_TASKS_ACTION)
     print(body)
 
 

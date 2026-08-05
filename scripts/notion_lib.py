@@ -14,6 +14,11 @@ REQUEST_TIMEOUT = 30  # seconds, for every Notion/ntfy network call
 DONE_STATUS = "Done"
 DEFAULT_NTFY_SERVER = "https://ntfy.sh"
 
+# Where a notification tap should land, and the one action button every push offers.
+NOTION_HOME_URL = "https://www.notion.so/3965c1d1502c814b8764e6b36b7960a7"
+NOTION_TASKS_URL = "https://www.notion.so/fc4118b4e0c54113a6e73ffa5b9513c3"
+OPEN_TASKS_ACTION = f"view, Open tasks, {NOTION_TASKS_URL}, clear=true"
+
 
 def env(name: str, required: bool = True, default: str | None = None) -> str | None:
     """Read an environment variable, treating an unset or empty value as absent.

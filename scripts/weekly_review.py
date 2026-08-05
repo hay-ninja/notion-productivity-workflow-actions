@@ -45,7 +45,8 @@ def main() -> None:
 
     body = "\n".join(lines)
     title = f"Week of {today:%b} {today.day}"
-    n.ntfy_push(body, title=title, tags="rotating_light")
+    n.ntfy_push(body, title=title, tags="rotating_light",
+                click=n.NOTION_HOME_URL, actions=n.OPEN_TASKS_ACTION)
     print(body)
 
 
