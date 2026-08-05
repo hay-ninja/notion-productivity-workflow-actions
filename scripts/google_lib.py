@@ -11,6 +11,7 @@ SCOPES = [
 
 
 def _credentials() -> Credentials:
+    """Build OAuth credentials from the stored refresh token (no interactive login)."""
     return Credentials(
         token=None,
         refresh_token=n.env("GOOGLE_REFRESH_TOKEN"),
@@ -22,4 +23,5 @@ def _credentials() -> Credentials:
 
 
 def calendar_service():
+    """Authenticated Google Calendar API client."""
     return build("calendar", "v3", credentials=_credentials(), cache_discovery=False)
