@@ -109,6 +109,19 @@ def test_format_task_line_includes_when_suffix_for_other_days():
     assert n.format_task_line(later, TODAY) == "⚪ Read chapter — Aug 26"
 
 
+def test_truncate_lines_no_truncation_within_limit():
+    lines = [f"line{i}" for i in range(8)]
+    assert n.truncate_lines(lines) == lines
+
+
+def test_truncate_lines_appends_remainder_above_limit():
+    lines = [f"line{i}" for i in range(11)]
+    result = n.truncate_lines(lines)
+    assert result[:8] == lines[:8]
+    assert result[8] == "…and 3 more"
+    assert len(result) == 9
+
+
 class _FakeResponse:
     def raise_for_status(self):
         pass

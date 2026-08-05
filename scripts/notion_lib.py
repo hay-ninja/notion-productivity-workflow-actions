@@ -217,6 +217,17 @@ def format_task_line(page: dict, today: date, *, title_prop: str = "Name",
     return f"{emoji} {title} — {when}"
 
 
+MAX_TASK_LINES = 8  # cap on task lines per notification, to keep pushes glanceable
+
+
+def truncate_lines(lines: list[str], limit: int = MAX_TASK_LINES) -> list[str]:
+    """Cap `lines` at `limit` entries, appending a "…and N more" summary line
+    when there's overflow instead of silently dropping it."""
+    if len(lines) <= limit:
+        return lines
+    return lines[:limit] + [f"…and {len(lines) - limit} more"]
+
+
 def ntfy_push(message: str, title: str | None = None, tags: str | None = None,
              priority: int | None = None, click: str | None = None,
              actions: str | None = None) -> None:

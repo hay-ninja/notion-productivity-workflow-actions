@@ -4,7 +4,6 @@ from __future__ import annotations
 import notion_lib as n
 
 WEEK_DAYS = 7
-MAX_LISTED = 8  # cap on lines shown per section, to keep the push short
 PRIORITY = 3
 
 
@@ -39,10 +38,12 @@ def main() -> None:
     )
 
     lines = [f"Tasks due this week: {len(open_tasks)}"]
-    lines += [n.format_task_line(p, today) for p in open_tasks[:MAX_LISTED]]
+    lines += n.truncate_lines([n.format_task_line(p, today) for p in open_tasks])
     lines += ["", f"Internship deadlines: {len(deadlines)}"]
-    lines += [n.format_task_line(p, today, title_prop="Company", due_prop="Application Deadline")
-              for p in deadlines[:MAX_LISTED]]
+    lines += n.truncate_lines([
+        n.format_task_line(p, today, title_prop="Company", due_prop="Application Deadline")
+        for p in deadlines
+    ])
 
     body = "\n".join(lines)
     title = f"Week of {today:%b} {today.day}"

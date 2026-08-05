@@ -23,7 +23,8 @@ def main() -> None:
         print(f"Nothing due in the next {HORIZON_DAYS} days.")
         return
 
-    body = "\n".join(n.format_task_line(p, today) for p in pages)
+    lines = n.truncate_lines([n.format_task_line(p, today) for p in pages])
+    body = "\n".join(lines)
     urgencies = [n.task_urgency(n.read_due_day(p), today) for p in pages]
     today_count = urgencies.count("today")
     title = f"Due soon · {today_count} today" if today_count else "Due soon"
