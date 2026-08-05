@@ -73,17 +73,6 @@ def update_page(page_id: str, properties: dict) -> dict:
     return r.json()
 
 
-def create_page(parent_database_id: str, properties: dict,
-                children: list | None = None) -> dict:
-    payload: dict = {"parent": {"database_id": parent_database_id},
-                     "properties": properties}
-    if children:
-        payload["children"] = children
-    r = requests.post(f"{API}/pages", headers=_headers(), json=payload, timeout=30)
-    r.raise_for_status()
-    return r.json()
-
-
 def prop(page: dict, name: str) -> dict:
     return page.get("properties", {}).get(name, {}) or {}
 
