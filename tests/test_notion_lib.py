@@ -109,6 +109,11 @@ def test_format_task_line_includes_when_suffix_for_other_days():
     assert n.format_task_line(later, TODAY) == "⚪ Read chapter — Aug 26"
 
 
+def test_format_task_line_uses_explicit_date_for_overdue_not_weekday():
+    overdue = _page("Finish problem set", "2026-08-03")
+    assert n.format_task_line(overdue, TODAY) == "🔴 Finish problem set — Aug 3"
+
+
 def test_truncate_lines_no_truncation_within_limit():
     lines = [f"line{i}" for i in range(8)]
     assert n.truncate_lines(lines) == lines

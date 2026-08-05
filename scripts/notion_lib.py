@@ -189,7 +189,9 @@ def urgency_emoji(due_day: str, today: date) -> str:
 
 def humanize_due(due_day: str, today: date) -> str:
     """Short human-readable due date: "today", "tomorrow", a weekday name for
-    dates within SOON_WINDOW_DAYS, or "Aug 26" otherwise. "" if `due_day` is unset."""
+    upcoming dates within SOON_WINDOW_DAYS, or "Aug 26" otherwise. Overdue
+    dates always get the explicit "Aug 26" form — a bare weekday name would
+    be ambiguous once something's already late. "" if `due_day` is unset."""
     if not due_day:
         return ""
     d = date.fromisoformat(due_day)
@@ -197,7 +199,7 @@ def humanize_due(due_day: str, today: date) -> str:
         return "today"
     if d == today + timedelta(days=1):
         return "tomorrow"
-    if d <= today + timedelta(days=SOON_WINDOW_DAYS):
+    if today < d <= today + timedelta(days=SOON_WINDOW_DAYS):
         return d.strftime("%a")
     return f"{d:%b} {d.day}"
 
