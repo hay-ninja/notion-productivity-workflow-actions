@@ -4,6 +4,8 @@ from __future__ import annotations
 import notion_lib as n
 
 HORIZON_DAYS = 3
+URGENT_PRIORITY = 4
+DEFAULT_PRIORITY = 3
 
 
 def main() -> None:
@@ -22,9 +24,11 @@ def main() -> None:
         return
 
     body = "\n".join(n.format_task_line(p, today) for p in pages)
-    today_count = sum(1 for p in pages if n.task_urgency(n.read_due_day(p), today) == "today")
+    urgencies = [n.task_urgency(n.read_due_day(p), today) for p in pages]
+    today_count = urgencies.count("today")
     title = f"Due soon · {today_count} today" if today_count else "Due soon"
-    n.ntfy_push(body, title=title, tags="calendar",
+    priority = URGENT_PRIORITY if "overdue" in urgencies or "today" in urgencies else DEFAULT_PRIORITY
+    n.ntfy_push(body, title=title, tags="calendar", priority=priority,
                 click=n.NOTION_HOME_URL, actions=n.OPEN_TASKS_ACTION)
     print(body)
 

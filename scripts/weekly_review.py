@@ -5,6 +5,7 @@ import notion_lib as n
 
 WEEK_DAYS = 7
 MAX_LISTED = 8  # cap on lines shown per section, to keep the push short
+PRIORITY = 3
 
 
 def _toggle_on(settings_db: str) -> bool:
@@ -45,7 +46,7 @@ def main() -> None:
 
     body = "\n".join(lines)
     title = f"Week of {today:%b} {today.day}"
-    n.ntfy_push(body, title=title, tags="rotating_light",
+    n.ntfy_push(body, title=title, tags="rotating_light", priority=PRIORITY,
                 click=n.NOTION_HOME_URL, actions=n.OPEN_TASKS_ACTION)
     print(body)
 
