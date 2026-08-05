@@ -1,10 +1,9 @@
 """Build Google API credentials from a stored refresh token (headless / Actions)."""
 from __future__ import annotations
 
+import notion_lib as n
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-
-import notion_lib as n
 
 SCOPES = [
     "https://www.googleapis.com/auth/gmail.readonly",

@@ -2,7 +2,11 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime, date, timedelta
+from datetime import (  # noqa: F401 -- re-exported for callers (n.timedelta)
+    date,
+    datetime,
+    timedelta,
+)
 from zoneinfo import ZoneInfo
 
 import requests
@@ -13,7 +17,9 @@ API = "https://api.notion.com/v1"
 
 
 def env(name: str, required: bool = True, default: str | None = None) -> str | None:
-    val = os.environ.get(name, default)
+    # GitHub Actions injects "" for a secret that isn't set, so an empty value
+    # must fall back to default rather than being treated as present.
+    val = os.environ.get(name) or default
     if required and not val:
         raise SystemExit(f"Missing required environment variable: {name}")
     return val

@@ -14,6 +14,7 @@ from datetime import date, datetime, timedelta
 
 import notion_lib as n
 from google_lib import calendar_service
+from googleapiclient.errors import HttpError
 
 EVENT_ID_PROP = "GCal Event ID"
 DEFAULT_MINUTES = 30  # length of a timed task event
@@ -58,7 +59,7 @@ def main() -> None:
                                     body=body).execute()
                 updated += 1
                 continue
-            except Exception as e:
+            except HttpError as e:
                 print(f"update failed for {existing} ({e}); recreating")
         ev = cal.events().insert(calendarId=calendar_id, body=body).execute()
         n.update_page(task["id"], {EVENT_ID_PROP: {"rich_text": [{"text": {"content": ev["id"]}}]}})
