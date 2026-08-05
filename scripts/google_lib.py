@@ -6,7 +6,6 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 SCOPES = [
-    "https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/calendar.events",
 ]
 
@@ -20,10 +19,6 @@ def _credentials() -> Credentials:
         token_uri="https://oauth2.googleapis.com/token",
         scopes=SCOPES,
     )
-
-
-def gmail_service():
-    return build("gmail", "v1", credentials=_credentials(), cache_discovery=False)
 
 
 def calendar_service():
