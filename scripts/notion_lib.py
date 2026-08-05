@@ -2,11 +2,7 @@
 from __future__ import annotations
 
 import os
-from datetime import (  # noqa: F401 -- re-exported for callers (n.timedelta)
-    date,
-    datetime,
-    timedelta,
-)
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import requests
@@ -17,6 +13,11 @@ API = "https://api.notion.com/v1"
 REQUEST_TIMEOUT = 30  # seconds, for every Notion/ntfy network call
 DONE_STATUS = "Done"
 DEFAULT_NTFY_SERVER = "https://ntfy.sh"
+
+# Where a notification tap should land, and the one action button every push offers.
+NOTION_HOME_URL = "https://www.notion.so/3965c1d1502c814b8764e6b36b7960a7"
+NOTION_TASKS_URL = "https://www.notion.so/fc4118b4e0c54113a6e73ffa5b9513c3"
+OPEN_TASKS_ACTION = f"view, Open tasks, {NOTION_TASKS_URL}, clear=true"
 
 
 def env(name: str, required: bool = True, default: str | None = None) -> str | None:
@@ -156,8 +157,88 @@ def date_between(name: str, start: str, end: str) -> dict:
     ]}
 
 
-def ntfy_push(message: str, title: str | None = None, tags: str | None = None) -> None:
-    """Push a message to the configured ntfy topic."""
+SOON_WINDOW_DAYS = 7  # matches the Notion "When" formula's "due within 7 days" bucket
+
+_URGENCY_EMOJI = {
+    "overdue": "🔴",
+    "today": "🟡",
+    "soon": "🔵",
+    "later": "⚪",
+}
+
+
+def task_urgency(due_day: str, today: date) -> str:
+    """Urgency bucket for a YYYY-MM-DD due date, matching the Notion "When"
+    formula: "overdue", "today", "soon" (within SOON_WINDOW_DAYS), or "later"."""
+    if not due_day:
+        return "later"
+    d = date.fromisoformat(due_day)
+    if d < today:
+        return "overdue"
+    if d == today:
+        return "today"
+    if d <= today + timedelta(days=SOON_WINDOW_DAYS):
+        return "soon"
+    return "later"
+
+
+def urgency_emoji(due_day: str, today: date) -> str:
+    """Emoji for a due date's urgency: 🔴 overdue, 🟡 today, 🔵 within a week, ⚪ later."""
+    return _URGENCY_EMOJI[task_urgency(due_day, today)]
+
+
+def humanize_due(due_day: str, today: date) -> str:
+    """Short human-readable due date: "today", "tomorrow", a weekday name for
+    upcoming dates within SOON_WINDOW_DAYS, or "Aug 26" otherwise. Overdue
+    dates always get the explicit "Aug 26" form — a bare weekday name would
+    be ambiguous once something's already late. "" if `due_day` is unset."""
+    if not due_day:
+        return ""
+    d = date.fromisoformat(due_day)
+    if d == today:
+        return "today"
+    if d == today + timedelta(days=1):
+        return "tomorrow"
+    if today < d <= today + timedelta(days=SOON_WINDOW_DAYS):
+        return d.strftime("%a")
+    return f"{d:%b} {d.day}"
+
+
+def format_task_line(page: dict, today: date, *, title_prop: str = "Name",
+                     due_prop: str = "Due Date") -> str:
+    """Render a task/deadline as "<emoji> <title> — <when>", the one line
+    format every ntfy push uses. The date suffix is dropped for tasks due
+    today since the emoji already signals that.
+    """
+    due_day = read_due_day(page, due_prop)
+    title = read_title_or(page, title_prop)
+    emoji = urgency_emoji(due_day, today)
+    when = humanize_due(due_day, today)
+    if not when or when == "today":
+        return f"{emoji} {title}"
+    return f"{emoji} {title} — {when}"
+
+
+MAX_TASK_LINES = 8  # cap on task lines per notification, to keep pushes glanceable
+
+
+def truncate_lines(lines: list[str], limit: int = MAX_TASK_LINES) -> list[str]:
+    """Cap `lines` at `limit` entries, appending a "…and N more" summary line
+    when there's overflow instead of silently dropping it."""
+    if len(lines) <= limit:
+        return lines
+    return lines[:limit] + [f"…and {len(lines) - limit} more"]
+
+
+def ntfy_push(message: str, title: str | None = None, tags: str | None = None,
+             priority: int | None = None, click: str | None = None,
+             actions: str | None = None) -> None:
+    """Push a message to the configured ntfy topic.
+
+    `priority` (1-5), `click` (a URL opened on tap), and `actions` (an ntfy
+    Actions header value) are sent only when provided, so callers that omit
+    them get the same request as before.
+    """
     server = env("NTFY_SERVER", required=False, default=DEFAULT_NTFY_SERVER)
     topic = env("NTFY_TOPIC")
     headers = {}
@@ -165,6 +246,12 @@ def ntfy_push(message: str, title: str | None = None, tags: str | None = None) -
         headers["Title"] = title
     if tags:
         headers["Tags"] = tags
+    if priority:
+        headers["Priority"] = str(priority)
+    if click:
+        headers["Click"] = click
+    if actions:
+        headers["Actions"] = actions
     r = requests.post(f"{server}/{topic}", data=message.encode("utf-8"),
                       headers=headers, timeout=REQUEST_TIMEOUT)
     r.raise_for_status()

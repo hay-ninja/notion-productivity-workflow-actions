@@ -4,13 +4,8 @@ from __future__ import annotations
 import notion_lib as n
 
 HORIZON_DAYS = 3
-
-
-def _line(page: dict, today_iso: str) -> str:
-    """One display line for a due task, showing "today" instead of the date when due today."""
-    due = n.read_due_day(page)
-    when = "today" if due == today_iso else due
-    return f"- {n.read_title_or(page)} ({when})"
+URGENT_PRIORITY = 4
+DEFAULT_PRIORITY = 3
 
 
 def main() -> None:
@@ -28,8 +23,14 @@ def main() -> None:
         print(f"Nothing due in the next {HORIZON_DAYS} days.")
         return
 
-    body = "\n".join(_line(p, today.isoformat()) for p in pages)
-    n.ntfy_push(body, title=f"{len(pages)} task(s) due soon", tags="calendar")
+    lines = n.truncate_lines([n.format_task_line(p, today) for p in pages])
+    body = "\n".join(lines)
+    urgencies = [n.task_urgency(n.read_due_day(p), today) for p in pages]
+    today_count = urgencies.count("today")
+    title = f"Due soon · {today_count} today" if today_count else "Due soon"
+    priority = URGENT_PRIORITY if "overdue" in urgencies or "today" in urgencies else DEFAULT_PRIORITY
+    n.ntfy_push(body, title=title, tags="calendar", priority=priority,
+                click=n.NOTION_HOME_URL, actions=n.OPEN_TASKS_ACTION)
     print(body)
 
 
