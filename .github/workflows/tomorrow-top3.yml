@@ -1,0 +1,24 @@
+# Tomorrow's Top 3 - LA 18:00 => UTC 01:00 (PDT). Cron is UTC and does not shift for
+# daylight saving, so this fires at 17:00 LA during PST until the offset is adjusted.
+name: Tomorrow's Top 3
+on:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python scripts/tomorrow_top3.py
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_TASKS_DB: ${{ secrets.NOTION_TASKS_DB }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_SERVER: ${{ secrets.NTFY_SERVER }}

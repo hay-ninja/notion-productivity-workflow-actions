@@ -1,8 +1,10 @@
-# Job C - every 15 minutes.
+# Job C - hourly. GitHub throttles free-tier scheduled workflows heavily; a */15 cron
+# only ever actually ran roughly every 1-2 hours, so this states the real cadence
+# instead of a number nobody should "fix" back down.
 name: C - GCal Sync
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "0 * * * *"
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,8 +24,6 @@ jobs:
           NOTION_INTERNSHIPS_DB: ${{ secrets.NOTION_INTERNSHIPS_DB }}
           NOTION_SETTINGS_DB: ${{ secrets.NOTION_SETTINGS_DB }}
           NOTION_DIGESTS_DB: ${{ secrets.NOTION_DIGESTS_DB }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          ANTHROPIC_MODEL: ${{ secrets.ANTHROPIC_MODEL }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}

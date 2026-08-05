@@ -29,7 +29,8 @@ Free plan. Timezone: America/Los_Angeles.
 - DB `3b15bfb9-f38f-4ca3-ba9c-32e164ad53d7` — one row, `Weekly Review Ping` checkbox.
 
 ## Daily Digests
-- DB `dfc03151-9269-417f-bc0b-87ec9fa422f7` — Name (title) + Date. Target of job A.
+- DB `dfc03151-9269-417f-bc0b-87ec9fa422f7` — Name (title) + Date. Legacy: was the
+  target of the email digest job, which has been retired. No longer written to.
 
 ## Home
 - Page `3965c1d1-502c-814b-8764-e6b36b7960a7`. Collapsible sections via `<details>`:

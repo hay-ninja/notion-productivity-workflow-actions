@@ -11,7 +11,7 @@ python -m pytest -q && python -m ruff check .
 
 Fix failures before committing. Never commit red.
 
-Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
+Scripts in this repo: `notion_lib.py`, `google_lib.py`, `tomorrow_top3.py`,
 `deadline_reminders.py`, `gcal_sync.py`, `weekly_review.py`, `build_dashboard.py`.
 
 ---
@@ -51,7 +51,7 @@ Scripts in this repo: `notion_lib.py`, `google_lib.py`, `email_digest.py`,
       by zero). This is what the progress rings render, so it must be right.
 
 - [ ] **T7 — `--dry-run` for every job.**
-      Add an `argparse` `--dry-run` flag to `email_digest.py`,
+      Add an `argparse` `--dry-run` flag to `tomorrow_top3.py`,
       `deadline_reminders.py`, `gcal_sync.py`, `weekly_review.py`. In dry-run: read
       normally, perform NO writes and NO notifications, print what would happen.
       Add a test asserting dry-run never calls the write helpers.

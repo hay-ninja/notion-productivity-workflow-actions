@@ -3,9 +3,9 @@
 ## The one-sentence version
 
 Notion holds all your tasks, internships, and notes. A set of free scheduled robots
-(GitHub Actions) do chores on a timer — summarizing email, reminding you of deadlines,
-syncing tasks to your calendar, nudging you weekly, tidying old tasks, and drawing a
-chart you can pin inside Notion.
+(GitHub Actions) do chores on a timer — reminding you of deadlines, syncing tasks to
+your calendar, nudging you weekly, previewing tomorrow's top 3, and drawing a chart
+you can pin inside Notion.
 
 ## Part 1 — The Notion workspace
 
@@ -43,7 +43,8 @@ One row with a **Weekly Review Ping** checkbox — the on/off switch for the Sun
 nudge (your finals-week kill switch).
 
 ### Daily Digests
-Where the email robot drops its output, one dated page per run.
+Legacy — was where the email digest wrote its output. That job has been retired, so
+this database is no longer written to; safe to archive.
 
 ### Home dashboard
 Collapsible sections: **Today & this week**, **All tasks** (one full-width panel with
@@ -52,18 +53,20 @@ photos, then footer links.
 
 ## Part 2 — The automation layer (this repo)
 
-- **A · Email digest — 8:00 AM & 6:00 PM.** Reads recent Gmail (read-only), has Claude
-  Haiku summarize it, writes a page to Daily Digests. The evening run also appends
-  **tomorrow's top 3** tasks so your brain pre-loads the next day.
 - **B · Deadline reminders — 7:00 AM.** Unfinished tasks due within 3 days, pushed to
   your phone via ntfy.
-- **C · Calendar sync — every 15 min.** Tasks with due dates become events on a
+- **C · Calendar sync — hourly.** Tasks with due dates become events on a
   dedicated "Tasks (Notion)" calendar; the event ID is written back to prevent
-  duplicates. One-way; doesn't delete events.
+  duplicates. One-way; doesn't delete events. Set to hourly (not */15) because GitHub
+  throttles free-tier schedules heavily — a */15 cron only ever actually ran roughly
+  every 1-2 hours.
 - **D · Weekly review — Sunday 6:00 PM.** Only fires if the Notion checkbox is on.
   Pushes the week's tasks plus internship deadlines.
-- **Dashboard — 6:00 AM.** Publishes aggregate counts as a Chart.js bar chart on
-  GitHub Pages, embeddable in Notion.
+- **Tomorrow's top 3 — 6:00 PM.** The most useful part of the old email digest,
+  kept as its own job: the top 3 unfinished tasks due tomorrow or earlier, pushed to
+  your phone via ntfy.
+- **Dashboard — 6:00 AM.** Publishes aggregate counts as a chart on GitHub Pages,
+  embeddable in Notion.
 - **Validate (CI).** Runs on every push: scripts compile, YAML parses, no `.env`
   committed.
 

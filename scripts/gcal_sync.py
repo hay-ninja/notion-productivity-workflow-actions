@@ -1,4 +1,4 @@
-"""Job C — one-way Notion -> Google Calendar sync. Cron every 15 min.
+"""Job C — one-way Notion -> Google Calendar sync. Cron hourly.
 
 Every task with a due date becomes one event on a single dedicated calendar:
   * due date with no time  -> an all-day event on that date
@@ -14,6 +14,7 @@ from datetime import date, datetime, timedelta
 
 import notion_lib as n
 from google_lib import calendar_service
+from googleapiclient.errors import HttpError
 
 EVENT_ID_PROP = "GCal Event ID"
 DEFAULT_MINUTES = 30  # length of a timed task event
@@ -21,8 +22,9 @@ TZ = "America/Los_Angeles"
 
 
 def _event_body(task: dict) -> dict:
+    """Build a Calendar API event body for one task's Due Date."""
     due = n.read_date(task, "Due Date")
-    body: dict = {"summary": n.read_title(task) or "(untitled task)",
+    body: dict = {"summary": n.read_title_or(task, fallback="(untitled task)"),
                   "source": {"title": "Notion task", "url": task.get("url", "")}}
     if due and "T" in due:
         start = datetime.fromisoformat(due)
@@ -30,7 +32,7 @@ def _event_body(task: dict) -> dict:
         body["start"] = {"dateTime": start.isoformat(), "timeZone": TZ}
         body["end"] = {"dateTime": end.isoformat(), "timeZone": TZ}
     else:
-        day = (due or "")[:10]
+        day = n.read_due_day(task)
         # Google treats all-day end as exclusive, so end is the following day.
         end_day = (date.fromisoformat(day) + timedelta(days=1)).isoformat()
         body["start"] = {"date": day}
@@ -39,13 +41,14 @@ def _event_body(task: dict) -> dict:
 
 
 def main() -> None:
+    """Sync every open, due-dated task to its own Google Calendar event."""
     tasks_db = n.env("NOTION_TASKS_DB")
     calendar_id = n.env("GCAL_CALENDAR_ID")
     cal = calendar_service()
 
     tasks = n.query_database(tasks_db, {"and": [
         {"property": "Due Date", "date": {"is_not_empty": True}},
-        n.status_is_not("Status", "Done"),
+        n.status_is_not_done(),
     ]})
 
     created = updated = 0
@@ -58,7 +61,7 @@ def main() -> None:
                                     body=body).execute()
                 updated += 1
                 continue
-            except Exception as e:
+            except HttpError as e:
                 print(f"update failed for {existing} ({e}); recreating")
         ev = cal.events().insert(calendarId=calendar_id, body=body).execute()
         n.update_page(task["id"], {EVENT_ID_PROP: {"rich_text": [{"text": {"content": ev["id"]}}]}})
