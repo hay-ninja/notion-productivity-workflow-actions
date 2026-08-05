@@ -19,13 +19,15 @@ this repo has
 
 | # | Job | Schedule (LA) | Engine |
 |---|-----|---------------|--------|
-| A | Email digest + tomorrow's top 3 | 08:00 & 18:00 | Actions + Claude Haiku |
 | B | Deadline reminders (due within 3 days) | 07:00 | Actions + ntfy |
-| C | Notion -> Google Calendar sync | every 15 min | Actions + GCal API |
+| C | Notion -> Google Calendar sync | hourly | Actions + GCal API |
 | D | Weekly review ping (toggle-gated) | Sun 18:00 | Actions + ntfy |
+| - | Tomorrow's top 3 | 18:00 | Actions + ntfy |
 | - | Dashboard data -> Pages chart | 06:00 | Actions + Pages |
 
-plus has a feature: **tomorrow's top 3** tasks 
+tomorrow's top 3 used to ride along with the daily email digest (now retired — it
+needed a restricted inbox scope and a paid API key for output that wasn't worth
+either). it's its own ping now.
 
 ^^ apparently supposed to be a good habit tip.
 

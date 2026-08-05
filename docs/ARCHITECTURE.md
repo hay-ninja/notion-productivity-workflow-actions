@@ -3,7 +3,7 @@
 ## Principle
 
 Notion is the **single source of truth**. GitHub Actions is a *stateless* scheduler:
-each run reads from Notion (and Gmail/Calendar), does one job, writes back or pushes a
+each run reads from Notion (and Calendar), does one job, writes back or pushes a
 notification, and exits. No database in this repo, no server to keep alive.
 
 ## Why GitHub Actions instead of a self-hosted runner
@@ -18,10 +18,10 @@ fine for daily jobs.
 
 | Job | Reads | Writes | Notifies |
 |-----|-------|--------|----------|
-| A digest | Gmail | Daily Digests (+ tomorrow's top 3 in the evening) | — |
 | B reminders | tasks (due <= 3 days) | — | ntfy |
 | C gcal sync | tasks (with due dates) | tasks `GCal Event ID`, Google Calendar | — |
 | D weekly review | tasks + internships + settings toggle | — | ntfy (if on) |
+| tomorrow's top 3 | tasks (due <= tomorrow) | — | ntfy |
 | dashboard | tasks (aggregates) | `site/data/stats.json` -> Pages | — |
 
 ## Chart embed flow
