@@ -34,7 +34,7 @@ def main() -> None:
     ]})
 
     body = body_for(top3_lines(pages, today))
-    n.ntfy_push(body, title="Tomorrow's top 3", tags="clipboard")
+    n.ntfy_push(body, title="Tomorrow · top 3", tags="clipboard")
     print(body)
 
 

@@ -44,7 +44,8 @@ def main() -> None:
               for p in deadlines[:MAX_LISTED]]
 
     body = "\n".join(lines)
-    n.ntfy_push(body, title="Weekly review", tags="rotating_light")
+    title = f"Week of {today:%b} {today.day}"
+    n.ntfy_push(body, title=title, tags="rotating_light")
     print(body)
 
 
