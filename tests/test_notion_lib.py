@@ -76,3 +76,41 @@ def test_date_on_or_before_filter_shape():
         "property": "Due Date",
         "date": {"on_or_before": "2026-08-06"},
     }
+
+
+class _FakeResponse:
+    def raise_for_status(self):
+        pass
+
+
+def _capture_post(monkeypatch, captured):
+    def fake_post(url, data, headers, timeout):
+        captured["url"] = url
+        captured["headers"] = headers
+        return _FakeResponse()
+    monkeypatch.setattr(n.requests, "post", fake_post)
+
+
+def test_ntfy_push_omits_optional_headers_when_not_provided(monkeypatch):
+    monkeypatch.setenv("NTFY_TOPIC", "test-topic")
+    captured: dict = {}
+    _capture_post(monkeypatch, captured)
+
+    n.ntfy_push("hello")
+
+    assert "Priority" not in captured["headers"]
+    assert "Click" not in captured["headers"]
+    assert "Actions" not in captured["headers"]
+
+
+def test_ntfy_push_sends_optional_headers_when_provided(monkeypatch):
+    monkeypatch.setenv("NTFY_TOPIC", "test-topic")
+    captured: dict = {}
+    _capture_post(monkeypatch, captured)
+
+    n.ntfy_push("hello", priority=4, click="https://example.com/home",
+                actions="view, Open, https://example.com/tasks, clear=true")
+
+    assert captured["headers"]["Priority"] == "4"
+    assert captured["headers"]["Click"] == "https://example.com/home"
+    assert captured["headers"]["Actions"] == "view, Open, https://example.com/tasks, clear=true"

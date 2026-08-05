@@ -156,8 +156,15 @@ def date_between(name: str, start: str, end: str) -> dict:
     ]}
 
 
-def ntfy_push(message: str, title: str | None = None, tags: str | None = None) -> None:
-    """Push a message to the configured ntfy topic."""
+def ntfy_push(message: str, title: str | None = None, tags: str | None = None,
+             priority: int | None = None, click: str | None = None,
+             actions: str | None = None) -> None:
+    """Push a message to the configured ntfy topic.
+
+    `priority` (1-5), `click` (a URL opened on tap), and `actions` (an ntfy
+    Actions header value) are sent only when provided, so callers that omit
+    them get the same request as before.
+    """
     server = env("NTFY_SERVER", required=False, default=DEFAULT_NTFY_SERVER)
     topic = env("NTFY_TOPIC")
     headers = {}
@@ -165,6 +172,12 @@ def ntfy_push(message: str, title: str | None = None, tags: str | None = None) -
         headers["Title"] = title
     if tags:
         headers["Tags"] = tags
+    if priority:
+        headers["Priority"] = str(priority)
+    if click:
+        headers["Click"] = click
+    if actions:
+        headers["Actions"] = actions
     r = requests.post(f"{server}/{topic}", data=message.encode("utf-8"),
                       headers=headers, timeout=REQUEST_TIMEOUT)
     r.raise_for_status()
