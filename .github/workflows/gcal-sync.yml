@@ -1,8 +1,10 @@
-# Job C - every 15 minutes.
+# Job C - hourly. GitHub throttles free-tier scheduled workflows heavily; a */15 cron
+# only ever actually ran roughly every 1-2 hours, so this states the real cadence
+# instead of a number nobody should "fix" back down.
 name: C - GCal Sync
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "0 * * * *"
   workflow_dispatch:
 permissions:
   contents: read

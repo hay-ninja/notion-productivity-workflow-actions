@@ -1,4 +1,4 @@
-"""Job C — one-way Notion -> Google Calendar sync. Cron every 15 min.
+"""Job C — one-way Notion -> Google Calendar sync. Cron hourly.
 
 Every task with a due date becomes one event on a single dedicated calendar:
   * due date with no time  -> an all-day event on that date
