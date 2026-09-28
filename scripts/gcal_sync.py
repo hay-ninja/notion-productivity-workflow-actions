@@ -62,7 +62,11 @@ def main() -> None:
                 updated += 1
                 continue
             except HttpError as e:
-                print(f"update failed for {existing} ({e}); recreating")
+                # Only a genuinely missing event is safe to recreate. Anything else
+                # (rate limit, 5xx) used to fall through to insert and leave a duplicate.
+                if int(e.resp.status) not in (404, 410):
+                    raise
+                print(f"event {existing} is gone; recreating")
         ev = cal.events().insert(calendarId=calendar_id, body=body).execute()
         n.update_page(task["id"], {EVENT_ID_PROP: {"rich_text": [{"text": {"content": ev["id"]}}]}})
         created += 1
