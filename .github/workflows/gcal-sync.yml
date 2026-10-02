@@ -8,6 +8,11 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+# Never let a delayed scheduled run overlap a manual/next run — overlapping runs
+# both saw a blank GCal Event ID and each inserted an event.
+concurrency:
+  group: gcal-sync
+  cancel-in-progress: false
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -23,7 +28,6 @@ jobs:
           NOTION_TASKS_DB: ${{ secrets.NOTION_TASKS_DB }}
           NOTION_INTERNSHIPS_DB: ${{ secrets.NOTION_INTERNSHIPS_DB }}
           NOTION_SETTINGS_DB: ${{ secrets.NOTION_SETTINGS_DB }}
-          NOTION_DIGESTS_DB: ${{ secrets.NOTION_DIGESTS_DB }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
