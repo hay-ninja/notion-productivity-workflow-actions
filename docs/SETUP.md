@@ -42,8 +42,7 @@ Never commit a `.env`; the `validate` workflow fails the push if you do.
    Internships, Automations Settings: open it → `•••` → **Connections
    → Connect to →** your integration.
 3. Add the `NOTION_TASKS_DB`, `NOTION_INTERNSHIPS_DB`, `NOTION_SETTINGS_DB` secrets
-   from `.env.example`. `NOTION_DIGESTS_DB` is legacy (see Troubleshooting) and no
-   longer read by anything — skip it unless you still have that database around.
+   from `.env.example`.
 
 > Checkpoint: you can now test the **dashboard** robot.
 
@@ -104,7 +103,6 @@ at `https://<you>.github.io/<repo>/`. In Notion, `/embed` that URL.
 | Duplicate calendar events | Old Zapier zap still on. |
 | Reminders an hour off in winter | Cron is UTC and ignores daylight saving. |
 | No push notification | Topic mismatch, or ntfy notifications disabled on phone. |
-| Daily Digests page never updates | Expected — the email digest job was retired. That database is legacy and safe to archive. |
 
 ## Secret checklist
 

@@ -18,20 +18,13 @@ Kept deliberately lean — every property earns its place:
   🔵 this week, ⚪ later, ✅ done. Updates itself, never blank.
 - **Course** — finer subject tags (comp sci, math, physics, GE).
 - **Note** — free text.
-- **GCal Event ID** (hidden) — lets the calendar sync update the right event instead
-  of duplicating. You never touch this.
-- **Stats** + four 0/1 counter formulas — the free progress-ring engine.
+- **GCal Event ID** (hidden) — the event this task maps to. The sync derives it from
+  the page ID, so it can't duplicate even if this is blank. You never touch this.
 
 Removed as dead weight: Place, Done At (paid-only), Grade, Priority (never used),
 Archived (redundant once views filter by status), and three unused helper formulas.
 Views hide finished work with a native Status filter (To-do + In progress), so there is
 no archive flag and no auto-archive job.
-
-### Dashboard Stats
-One hidden row that sums the counters and renders progress for today and this week.
-Set the property display to **Ring** for the circular look. *Quirk:* tasks created
-without a template don't auto-link here, so bulk-link occasionally or the rings
-undercount.
 
 ### Internships
 Company, Role, Status (Researching → Applied → OA → Interview → Offer / Rejected /
@@ -41,10 +34,6 @@ Withdrawn), Application Deadline, Applied Date, Link, Notes, Priority. Pipeline 
 ### Automations Settings
 One row with a **Weekly Review Ping** checkbox — the on/off switch for the Sunday
 nudge (your finals-week kill switch).
-
-### Daily Digests
-Legacy — was where the email digest wrote its output. That job has been retired, so
-this database is no longer written to; safe to archive.
 
 ### Home dashboard
 Collapsible sections: **Today & this week**, **All tasks** (one full-width panel with
