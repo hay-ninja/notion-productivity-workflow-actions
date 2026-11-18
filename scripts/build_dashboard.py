@@ -12,8 +12,13 @@ import json
 import os
 
 import notion_lib as n
+from insights import build_insights
+from task_history import empty_history, snapshot_from_pages, type_colors_from_pages, update_history
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "site", "data", "stats.json")
+# Task history lives on the `dashboard-history` branch; the workflow checks it out here.
+HISTORY_PATH = os.environ.get("HISTORY_PATH") or os.path.join(
+    os.path.dirname(__file__), "..", "history", "history.json")
 HISTORY_WEEKS = 8  # weeks of history for the bar chart, including the current week
 
 
@@ -48,8 +53,23 @@ def _open_by_type(open_tasks: list[dict]) -> dict[str, int]:
     return dict(sorted(by_type.items(), key=lambda kv: -kv[1]))
 
 
+def load_history(path: str = HISTORY_PATH) -> dict:
+    """Stored history, or a fresh one on the first run."""
+    if os.path.exists(path):
+        with open(path) as f:
+            return json.load(f)
+    return empty_history()
+
+
+def save_history(history: dict, path: str = HISTORY_PATH) -> None:
+    """Write history compactly (one file, rewritten each run)."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(history, f, separators=(",", ":"), sort_keys=True)
+
+
 def main() -> None:
-    """Aggregate today/week/open-total/by-type/history counts and write stats.json."""
+    """Aggregate counts, update the task history, and write stats.json."""
     tasks_db = n.env("NOTION_TASKS_DB")
     today = n.today_la()
     monday = today - n.timedelta(days=today.weekday())
@@ -59,6 +79,10 @@ def main() -> None:
     week_tasks = n.query_database(tasks_db, _due_between(monday, sunday))
     open_tasks = n.query_database(tasks_db, n.status_is_not_done())
 
+    all_tasks = n.query_database(tasks_db)
+    history = update_history(load_history(), snapshot_from_pages(all_tasks), today)
+    save_history(history)
+
     payload = {
         "generated_at": n.now_la().isoformat(),
         "today": _split(today_tasks),
@@ -66,6 +90,8 @@ def main() -> None:
         "open_total": len(open_tasks),
         "by_type": _open_by_type(open_tasks),
         "weeks": _weekly_history(tasks_db, monday),
+        "type_colors": type_colors_from_pages(all_tasks),
+        "insights": build_insights(history, today),
     }
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w") as f:

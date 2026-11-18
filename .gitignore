@@ -13,3 +13,6 @@ venv/
 .DS_Store
 .idea/
 .vscode/
+
+# task history worktree (lives on the dashboard-history branch)
+history/
