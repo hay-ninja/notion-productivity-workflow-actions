@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Insights</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI Variable Display","Segoe UI",Helvetica,Arial,sans-serif;
+    font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased;
+    background:var(--bg); color:var(--ink);
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:18px 18px 40px}
+
+  /* top strip — same three rings as the compact embed */
+  .rings{display:flex;gap:8px;justify-content:space-between;padding:6px 4px 2px;flex-wrap:wrap}
+  .ring{display:flex;align-items:center;gap:12px;flex:1 1 180px;justify-content:center;min-width:0}
+  .ring svg{flex:0 0 auto}
+  .k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .kv{font-size:16px;font-weight:600}
+  .meta{font-size:12px;color:var(--faint);text-align:center;margin-top:4px}
+  .sample{display:inline-block;margin-left:6px;padding:0 6px;border-radius:4px;background:var(--chip);color:var(--muted)}
+
+  /* Notion-style section headings */
+  h2{font-size:18px;font-weight:600;margin:34px 0 4px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  h2 .em{margin-right:6px}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media (min-width:620px){ .two{grid-template-columns:1fr 1fr} }
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px 12px;min-width:0}
+  .card h3{margin:0;font-size:14px;font-weight:600}
+  .q{margin:1px 0 10px;color:var(--muted);font-size:12.5px}
+  .take{font-size:15px;font-weight:500;margin:0 0 12px;line-height:1.4}
+  .take.wait{color:var(--muted);font-weight:400}
+  .chart{position:relative;width:100%}
+  .chart.collecting{opacity:.35;filter:grayscale(.6)}
+  .foot{margin-top:8px;font-size:11.5px;color:var(--faint)}
+  .legend{display:flex;flex-wrap:wrap;gap:4px 14px;margin:0 0 8px;font-size:12px;color:var(--muted)}
+  .legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:0}
+  .stat{font-size:40px;font-weight:600;line-height:1.1;margin:2px 0 4px}
+  .stat small{font-size:14px;font-weight:400;color:var(--muted);margin-left:6px}
+
+  details{margin-top:6px}
+  summary{cursor:pointer;font-size:12px;color:var(--faint);list-style:none;user-select:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▸ ";}
+  details[open] summary::before{content:"▾ ";}
+  table{border-collapse:collapse;margin-top:6px;font-size:12px;font-variant-numeric:tabular-nums;width:100%}
+  td,th{padding:3px 8px 3px 0;text-align:left;border-bottom:1px solid var(--line);font-weight:400}
+  th{color:var(--muted)}
+
+  svg text{font-family:inherit}
+  #tip{position:fixed;pointer-events:none;z-index:9;padding:6px 9px;border-radius:6px;font-size:12px;
+       background:var(--tipbg);color:var(--tipink);box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:0;
+       transition:opacity .08s;max-width:240px;line-height:1.35}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="rings" id="rings"></div>
+  <div class="meta" id="meta"></div>
+
+  <h2><span class="em">🔥</span>Needs attention</h2>
+  <p class="sub">What to deal with this week.</p>
+  <div class="grid">
+    <div class="card" id="c-load"></div>
+    <div class="grid two">
+      <div class="card" id="c-overdue"></div>
+      <div class="card" id="c-stale"></div>
+    </div>
+  </div>
+
+  <h2><span class="em">📈</span>Momentum</h2>
+  <p class="sub">Is the pile getting bigger or smaller?</p>
+  <div class="grid"><div class="card" id="c-backlog"></div></div>
+
+  <h2><span class="em">🧠</span>Habits</h2>
+  <p class="sub">How you actually work, from your own history.</p>
+  <div class="grid">
+    <div class="card" id="c-timing"></div>
+    <div class="card" id="c-rhythm"></div>
+    <div class="grid two">
+      <div class="card" id="c-pushes"></div>
+      <div class="card" id="c-planning"></div>
+    </div>
+  </div>
+
+  <h2><span class="em">🗓️</span>History</h2>
+  <p class="sub">Every day you finished something.</p>
+  <div class="grid"><div class="card" id="c-heat"></div></div>
+</div>
+<div id="tip"></div>
+
+<script>
+// ---------- theme: ?bg=RRGGBB (Notion dark #191919 by default; any colour works) ----------
+var params = new URLSearchParams(location.search);
+var bg = (params.get("bg") || "191919").replace("#", "");
+if (!/^[0-9a-fA-F]{6}$/.test(bg)) bg = "191919";
+var R = parseInt(bg.substr(0,2),16), G = parseInt(bg.substr(2,2),16), B = parseInt(bg.substr(4,2),16);
+var DARK = (0.299*R + 0.587*G + 0.114*B) / 255 < 0.5;
+
+// Overlays are relative to the background, so a navy ?bg works as well as Notion grey.
+var T = DARK ? {
+  ink:"#e3e2e0", muted:"#9b9b9b", faint:"#7f7f7f",
+  line:"rgba(255,255,255,.09)", card:"rgba(255,255,255,.03)", chip:"rgba(255,255,255,.08)",
+  grid:"rgba(255,255,255,.07)", track:"rgba(255,255,255,.14)", neutral:"#6b6b6b",
+  tipbg:"#2f2f2f", tipink:"#e3e2e0"
+} : {
+  ink:"#37352f", muted:"#787774", faint:"#91918e",
+  line:"rgba(55,53,47,.12)", card:"rgba(55,53,47,.025)", chip:"rgba(55,53,47,.08)",
+  grid:"rgba(55,53,47,.08)", track:"rgba(55,53,47,.14)", neutral:"#b4b4b0",
+  tipbg:"#ffffff", tipink:"#37352f"
+};
+// Notion's own tag colours (text tones), so a Type looks the same here as on its tag.
+var NOTION = DARK ? {
+  default:"#9b9b9b", gray:"#9b9b9b", brown:"#ba856f", orange:"#c77d48", yellow:"#ca9849",
+  green:"#529e72", blue:"#5e87c9", purple:"#9d68d3", pink:"#d15796", red:"#df5452"
+} : {
+  default:"#787774", gray:"#787774", brown:"#9f6b53", orange:"#d9730d", yellow:"#cb912f",
+  green:"#448361", blue:"#337ea9", purple:"#9065b0", pink:"#c14c8a", red:"#d44c47"
+};
+var ACCENT = NOTION.blue, GOOD = NOTION.green, LATE = NOTION.orange;
+var css = document.documentElement.style;
+css.setProperty("--bg", "#" + bg);
+Object.keys(T).forEach(function(k){ css.setProperty("--" + k, T[k]); });
+
+var TYPE_COLORS = {};
+function typeColor(t){ return NOTION[TYPE_COLORS[t]] || NOTION.gray; }
+
+// ---------- tiny helpers ----------
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function el(id){ return document.getElementById(id); }
+function plural(n, w){ return n + " " + w + (n === 1 ? "" : "s"); }
+function fmtDay(iso, opts){ var p = iso.split("-"); return new Date(+p[0], p[1]-1, +p[2]).toLocaleDateString(undefined, opts || {month:"short", day:"numeric"}); }
+function niceMax(v){ if (v <= 4) return Math.max(v, 1); var s = [5,10,20,25,50,100]; for (var i=0;i<s.length;i++) if (v <= s[i]) return s[i]; return Math.ceil(v/50)*50; }
+function ticks(max){ var step = max <= 4 ? 1 : max <= 10 ? 2 : max <= 25 ? 5 : max <= 50 ? 10 : 25; var out=[]; for (var v=0; v<=max; v+=step) out.push(v); return out; }
+
+// column path: 4px rounded top (data end), square at the baseline
+function colPath(x, y, w, h){
+  if (h <= 0) return "";
+  var r = Math.min(4, w/2, h);
+  return "M"+x+","+(y+h)+"V"+(y+r)+"Q"+x+","+y+" "+(x+r)+","+y+"H"+(x+w-r)+"Q"+(x+w)+","+y+" "+(x+w)+","+(y+r)+"V"+(y+h)+"Z";
+}
+// bar path: rounded at the right end only
+function barPath(x, y, w, h){
+  if (w <= 0) return "";
+  var r = Math.min(4, h/2, w);
+  return "M"+x+","+y+"H"+(x+w-r)+"Q"+(x+w)+","+y+" "+(x+w)+","+(y+r)+"V"+(y+h-r)+"Q"+(x+w)+","+(y+h)+" "+(x+w-r)+","+(y+h)+"H"+x+"Z";
+}
+function svg(w, h, body){ return '<svg width="100%" viewBox="0 0 '+w+' '+h+'" role="img">'+body+'</svg>'; }
+function txt(x, y, s, o){ o = o || {}; return '<text x="'+x+'" y="'+y+'" font-size="'+(o.size||11)+'" fill="'+(o.fill||T.muted)+'" text-anchor="'+(o.anchor||"start")+'"'+(o.weight?' font-weight="'+o.weight+'"':'')+'>'+esc(s)+'</text>'; }
+function hit(x, y, w, h, tip){ return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="transparent" data-tip="'+esc(tip)+'"/>'; }
+function legend(items){ return '<div class="legend">'+items.map(function(i){ return '<span><i style="background:'+i[1]+'"></i>'+esc(i[0])+'</span>'; }).join("")+'</div>'; }
+function table(head, rows){
+  return '<details><summary>Numbers</summary><table><tr>'+head.map(function(h){return '<th>'+esc(h)+'</th>';}).join("")+'</tr>'
+    + rows.map(function(r){ return '<tr>'+r.map(function(c){return '<td>'+esc(c)+'</td>';}).join("")+'</tr>'; }).join("")+'</table></details>';
+}
+function widthOf(id){ return Math.max(260, Math.round(el(id).clientWidth - 32)); }
+
+function card(id, o){
+  el(id).innerHTML = '<h3>'+esc(o.title)+'</h3><p class="q">'+esc(o.q)+'</p>'
+    + '<p class="take'+(o.ready === false ? ' wait' : '')+'">'+esc(o.take)+'</p>'
+    + (o.legend || "")
+    + '<div class="chart'+(o.ready === false ? ' collecting' : '')+'">'+(o.chart || "")+'</div>'
+    + (o.foot ? '<div class="foot">'+esc(o.foot)+'</div>' : '')
+    + (o.table || "");
+}
+
+// ---------- generic column chart (grouped or stacked) ----------
+// cats: [{label, tip?, values:[n...]}], series: [{name,color}], opts: {stacked, refLine:{value,label}}
+function columns(w, cats, series, opts){
+  opts = opts || {};
+  var h = opts.height || 170, padL = 26, padB = 22, padT = 14, cw = w - padL, ch = h - padB - padT;
+  var totals = cats.map(function(c){ return opts.stacked ? c.values.reduce(function(a,b){return a+b;},0) : Math.max.apply(null, c.values); });
+  var max = niceMax(Math.max.apply(null, totals.concat([opts.refLine ? opts.refLine.value : 0, 1])));
+  var y = function(v){ return padT + ch - (v / max) * ch; };
+  var out = "";
+  ticks(max).forEach(function(t){
+    out += '<line x1="'+padL+'" x2="'+w+'" y1="'+y(t)+'" y2="'+y(t)+'" stroke="'+T.grid+'"/>' + txt(padL-6, y(t)+3.5, t, {anchor:"end", size:10, fill:T.faint});
+  });
+  var band = cw / cats.length;
+  var groupW = Math.min(opts.stacked ? 24 : 24 * series.length + 2 * (series.length - 1), band * 0.7);
+  var colW = opts.stacked ? groupW : (groupW - 2 * (series.length - 1)) / series.length;
+  cats.forEach(function(c, i){
+    var gx = padL + band * i + (band - groupW) / 2;
+    if (opts.stacked){
+      var acc = 0;
+      c.values.forEach(function(v, s){
+        if (!v) return;
+        var top = y(acc + v), bottom = y(acc), gap = acc ? 2 : 0;
+        var isTop = c.values.slice(s+1).every(function(z){ return !z; });
+        out += isTop ? '<path d="'+colPath(gx, top, colW, bottom - top - gap)+'" fill="'+series[s].color+'"/>'
+                     : '<rect x="'+gx+'" y="'+top+'" width="'+colW+'" height="'+Math.max(0, bottom-top-gap)+'" fill="'+series[s].color+'"/>';
+        acc += v;
+      });
+      if (totals[i]) out += txt(gx + colW/2, y(totals[i]) - 5, totals[i], {anchor:"middle", fill:T.ink, size:11, weight:600});
+    } else {
+      c.values.forEach(function(v, s){
+        var x = gx + s * (colW + 2);
+        out += '<path d="'+colPath(x, y(v), colW, (padT + ch) - y(v))+'" fill="'+series[s].color+'"/>';
+      });
+    }
+    out += txt(gx + groupW/2, h - 6, c.label, {anchor:"middle", size:11, fill: c.strong ? T.ink : T.muted, weight: c.strong ? 600 : null});
+    out += hit(padL + band*i, padT, band, ch + padB, c.tip || c.label);
+  });
+  out += '<line x1="'+padL+'" x2="'+w+'" y1="'+(padT+ch)+'" y2="'+(padT+ch)+'" stroke="'+T.track+'"/>';
+  if (opts.refLine && opts.refLine.value > 0){
+    var ry = y(opts.refLine.value);
+    out += '<line x1="'+padL+'" x2="'+w+'" y1="'+ry+'" y2="'+ry+'" stroke="'+T.muted+'" stroke-width="1" stroke-dasharray="3 3"/>';
+  }
+  return svg(w, h, out);
+}
+
+// ---------- rings (same as the compact embed) ----------
+function ring(pct, color, label, value, center){
+  var r = 26, C = 2*Math.PI*r, off = C * (1 - Math.max(0, Math.min(100, pct)) / 100);
+  return '<div class="ring"><svg width="64" height="64" viewBox="0 0 64 64">'
+    + '<circle cx="32" cy="32" r="'+r+'" fill="none" stroke="'+T.track+'" stroke-width="7"/>'
+    + '<circle cx="32" cy="32" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 32 32)"/>'
+    + '<text x="32" y="37" text-anchor="middle" font-size="13" font-weight="600" fill="'+T.ink+'">'+center+'</text></svg>'
+    + '<div><div class="k">'+label+'</div><div class="kv">'+value+'</div></div></div>';
+}
+
+// ---------- sections ----------
+function renderTop(d){
+  var t = d.today, w = d.week, tp = t.total ? 100*t.done/t.total : 0, wp = w.total ? 100*w.done/w.total : 0;
+  el("rings").innerHTML = ring(tp, ACCENT, "Today", t.done+" / "+t.total+" done", Math.round(tp)+"%")
+    + ring(wp, GOOD, "This week", w.done+" / "+w.total+" done", Math.round(wp)+"%")
+    + ring(100, T.neutral, "Open total", d.open_total+" tasks", d.open_total);
+  var g = new Date(d.generated_at), hrs = (Date.now() - g.getTime()) / 36e5;
+  var ins = d.insights;
+  el("meta").innerHTML = (hrs > 30 && !d.sample ? "⚠ " : "") + "updated "
+    + g.toLocaleDateString(undefined,{month:"short",day:"numeric"}) + " "
+    + g.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})
+    + (ins ? " · tracking for " + plural(ins.days_tracked, "day") : "")
+    + (d.sample ? '<span class="sample">sample data</span>' : "");
+}
+
+function renderLoad(I){
+  var L = I.load, types = [];
+  L.days.forEach(function(d){ Object.keys(d.by_type).forEach(function(t){ if (types.indexOf(t) < 0) types.push(t); }); });
+  var series = types.map(function(t){ return {name:t, color:typeColor(t)}; });
+  var cats = L.days.map(function(d){
+    var parts = types.filter(function(t){ return d.by_type[t]; }).map(function(t){ return t+" "+d.by_type[t]; });
+    return {label:d.label, strong: L.pace && d.count > Math.max(2*L.pace, L.pace+2),
+      values: types.map(function(t){ return d.by_type[t] || 0; }),
+      tip: fmtDay(d.date, {weekday:"short", month:"short", day:"numeric"}) + " — " + plural(d.count, "task") + " due" + (parts.length ? "\n" + parts.join(" · ") : "")};
+  });
+  card("c-load", {
+    title:"Next 7 days", q:"Open tasks due each day, against how many you usually finish in a day.",
+    take:L.headline,
+    legend: legend(series.map(function(s){ return [s.name, s.color]; })).replace("</div>",
+      '<span><svg width="16" height="8" style="margin-right:5px"><line x1="0" x2="16" y1="4" y2="4" stroke="'+T.muted+'" stroke-dasharray="3 3"/></svg>your pace · '+L.pace.toFixed(1)+'/day</span></div>'),
+    chart: columns(widthOf("c-load"), cats, series.length ? series : [{name:"", color:ACCENT}], {stacked:true, refLine:{value:L.pace}}),
+    foot:"Pace = tasks finished over the last 28 days ÷ 28.",
+    table: table(["Day","Due"], L.days.map(function(d){ return [fmtDay(d.date,{weekday:"short",month:"short",day:"numeric"}), d.count]; }))
+  });
+  el("c-overdue").innerHTML = '<h3>Overdue</h3><p class="q">Open tasks past their due date.</p>'
+    + '<div class="stat">'+L.overdue+'<small>'+(L.overdue === 1 ? "task" : "tasks")+'</small></div>'
+    + '<div class="foot">'+(L.overdue ? "Reschedule or drop them so the plan stays honest." : "All caught up.")+'</div>';
+}
+
+function hbars(w, rows, o){
+  // rows: [{label, value, color, valueText, tip, faded}]
+  o = o || {};
+  var rowH = 26, labelW = Math.min(118, w * 0.36), valW = 44, bw = w - labelW - valW, h = rows.length * rowH + 2;
+  var max = o.max || Math.max.apply(null, rows.map(function(r){ return r.value; }).concat([1]));
+  var out = "";
+  rows.forEach(function(r, i){
+    var y = i * rowH + 4, len = Math.max(r.value ? 3 : 0, (r.value / max) * bw);
+    var op = r.faded ? ' opacity=".45"' : '';
+    out += '<g'+op+'>' + txt(0, y + 13, r.label.length > 16 ? r.label.slice(0,15)+"…" : r.label, {fill:T.ink, size:12})
+      + '<rect x="'+labelW+'" y="'+(y+4)+'" width="'+bw+'" height="10" rx="5" fill="'+T.track+'" opacity=".5"/>'
+      + '<path d="'+barPath(labelW, y + 4, len, 10)+'" fill="'+r.color+'"/>'
+      + txt(w, y + 13, r.valueText, {anchor:"end", size:12, fill:T.muted}) + '</g>'
+      + hit(0, y, w, rowH, r.tip);
+  });
+  return svg(w, h, out);
+}
+
+function renderStale(I){
+  var S = I.stale, rows = Object.keys(S.by_type).map(function(t){
+    return {label:t, value:S.by_type[t], color:typeColor(t), valueText:String(S.by_type[t]), tip:t+": "+plural(S.by_type[t], "task")+" untouched 7+ days"};
+  });
+  el("c-stale").innerHTML = '<h3>Stale</h3><p class="q">Open, and no status or date change in 7+ days.</p>'
+    + '<div class="stat">'+S.count+'<small>of '+S.open+' open</small></div>'
+    + (rows.length ? '<div class="chart" style="margin-top:8px">'+hbars(widthOf("c-stale"), rows)+'</div>' : "")
+    + '<div class="foot">Good candidates to break up, schedule, or delete.</div>';
+}
+
+function renderBacklog(I){
+  var K = I.backlog, w = widthOf("c-backlog");
+  // 1) open tasks over time — single line with a 10% wash
+  var line = "";
+  var pts = K.daily;
+  if (pts.length >= 2){
+    var h = 120, padL = 26, padT = 12, padB = 20, cw = w - padL - 34, ch = h - padT - padB;
+    var max = niceMax(Math.max.apply(null, pts.map(function(p){ return p.open; })));
+    var x = function(i){ return padL + (i / (pts.length - 1)) * cw; }, y = function(v){ return padT + ch - (v/max)*ch; };
+    var dpath = pts.map(function(p, i){ return (i ? "L" : "M") + x(i).toFixed(1) + "," + y(p.open).toFixed(1); }).join("");
+    var body = "";
+    ticks(max).forEach(function(t){ body += '<line x1="'+padL+'" x2="'+(padL+cw)+'" y1="'+y(t)+'" y2="'+y(t)+'" stroke="'+T.grid+'"/>' + txt(padL-6, y(t)+3.5, t, {anchor:"end", size:10, fill:T.faint}); });
+    body += '<path d="'+dpath+'L'+x(pts.length-1)+','+(padT+ch)+'L'+padL+','+(padT+ch)+'Z" fill="'+ACCENT+'" opacity=".1"/>'
+      + '<path d="'+dpath+'" fill="none" stroke="'+ACCENT+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+    var last = pts[pts.length-1];
+    body += '<circle cx="'+x(pts.length-1)+'" cy="'+y(last.open)+'" r="4" fill="'+ACCENT+'" stroke="var(--bg)" stroke-width="2"/>'
+      + txt(x(pts.length-1) + 8, y(last.open) + 4, last.open, {fill:T.ink, weight:600, size:12});
+    body += txt(padL, h - 4, fmtDay(pts[0].date), {size:10, fill:T.faint}) + txt(padL + cw, h - 4, fmtDay(last.date), {size:10, fill:T.faint, anchor:"end"});
+    var step = cw / Math.max(1, pts.length - 1);
+    pts.forEach(function(p, i){ body += hit(x(i) - step/2, padT, step, ch, fmtDay(p.date) + " — " + p.open + " open"); });
+    line = '<div class="k" style="margin:4px 0 2px">Open tasks</div>' + svg(w, h, body);
+  } else {
+    line = '<div class="k" style="margin:4px 0 2px">Open tasks</div><div class="foot" style="margin:6px 0 12px">The open-tasks line starts after a couple of daily snapshots.</div>';
+  }
+  // 2) added vs finished per week — grouped columns
+  var series = [{name:"Added", color:T.neutral}, {name:"Finished", color:ACCENT}];
+  var tight = w < 520;
+  var cats = K.weeks.map(function(wk, i){
+    return {label: i === K.weeks.length - 1 ? (tight ? "Now" : "This wk") : fmtDay(wk.week, tight ? {month:"numeric", day:"numeric"} : undefined), values:[wk.added, wk.done],
+            tip:"Week of " + fmtDay(wk.week) + "\nAdded " + wk.added + " · Finished " + wk.done};
+  });
+  card("c-backlog", {
+    title:"Backlog", q:"Whether you're finishing tasks as fast as you add them.",
+    take:K.headline,
+    chart: line + '<div class="k" style="margin:14px 0 2px">Added vs. finished, per week</div>' + legend(series.map(function(s){ return [s.name, s.color]; }))
+      + columns(w, cats, series, {height:150}),
+    table: table(["Week of","Added","Finished"], K.weeks.map(function(wk){ return [fmtDay(wk.week), wk.added, wk.done]; }))
+  });
+}
+
+function renderTiming(I){
+  var F = I.timing, w = widthOf("c-timing");
+  // diverging: early = blue, due day = neutral, late = orange
+  var colors = [ACCENT, ACCENT, ACCENT, T.neutral, LATE, LATE];
+  var cats = F.buckets.map(function(b, i){ return {label:b.label, values:[b.count], color:colors[i], tip:b.label + ": " + plural(b.count, "task")}; });
+  var hist = (function(){
+    var h = 160, padL = 26, padB = 22, padT = 14, cw = w - padL, ch = h - padB - padT;
+    var max = niceMax(Math.max.apply(null, F.buckets.map(function(b){ return b.count; }).concat([1])));
+    var y = function(v){ return padT + ch - (v/max)*ch; }, band = cw / cats.length, cwid = Math.min(24*1.6, band*0.6), out = "";
+    ticks(max).forEach(function(t){ out += '<line x1="'+padL+'" x2="'+w+'" y1="'+y(t)+'" y2="'+y(t)+'" stroke="'+T.grid+'"/>' + txt(padL-6, y(t)+3.5, t, {anchor:"end", size:10, fill:T.faint}); });
+    cats.forEach(function(c, i){
+      var x = padL + band*i + (band - cwid)/2;
+      out += '<path d="'+colPath(x, y(c.values[0]), cwid, padT + ch - y(c.values[0]))+'" fill="'+c.color+'"/>'
+        + txt(x + cwid/2, h - 6, c.label, {anchor:"middle", size: w < 420 ? 9.5 : 11})
+        + hit(padL + band*i, padT, band, ch + padB, c.tip);
+    });
+    out += '<line x1="'+padL+'" x2="'+w+'" y1="'+(padT+ch)+'" y2="'+(padT+ch)+'" stroke="'+T.track+'"/>';
+    return svg(w, h, out);
+  })();
+  // per-Type median, as dots on an early ⟷ late axis
+  var dots = (function(){
+    if (!F.by_type.length) return "";
+    var span = Math.max(3, Math.ceil(Math.max.apply(null, F.by_type.map(function(t){ return Math.abs(t.median); }))));
+    var rowH = 26, labelW = Math.min(118, w*0.32), nW = 44, ax = w - labelW - nW, h = F.by_type.length * rowH + 26;
+    var x = function(v){ return labelW + ax/2 + (v / span) * (ax/2 - 6); }, out = "";
+    out += '<line x1="'+x(0)+'" x2="'+x(0)+'" y1="0" y2="'+(h-20)+'" stroke="'+T.track+'"/>'
+      + txt(labelW, h - 4, "← earlier", {size:10, fill:T.faint}) + txt(x(0), h - 4, "due day", {size:10, fill:T.faint, anchor:"middle"})
+      + txt(labelW + ax, h - 4, "later →", {size:10, fill:T.faint, anchor:"end"});
+    F.by_type.forEach(function(t, i){
+      var cy = i * rowH + 13, op = t.few ? ' opacity=".45"' : '';
+      out += '<g'+op+'><line x1="'+labelW+'" x2="'+(labelW+ax)+'" y1="'+cy+'" y2="'+cy+'" stroke="'+T.grid+'"/>'
+        + txt(0, cy + 4, t.type, {fill:T.ink, size:12})
+        + '<line x1="'+x(0)+'" x2="'+x(t.median)+'" y1="'+cy+'" y2="'+cy+'" stroke="'+typeColor(t.type)+'" stroke-width="2"/>'
+        + '<circle cx="'+x(t.median)+'" cy="'+cy+'" r="5" fill="'+typeColor(t.type)+'" stroke="var(--bg)" stroke-width="2"/>'
+        + txt(w, cy + 4, "n=" + t.n, {anchor:"end", size:11, fill:T.faint}) + '</g>'
+        + hit(0, cy - rowH/2, w, rowH, t.type + ": median " + (t.median === 0 ? "on the due date" : Math.abs(t.median) + (Math.abs(t.median) === 1 ? " day " : " days ") + (t.median < 0 ? "early" : "late")) + " (" + plural(t.n, "task") + (t.few ? ", too few to trust" : "") + ")");
+    });
+    return '<div class="k" style="margin:16px 0 6px">Median by Type</div>' + svg(w, h, out);
+  })();
+  card("c-timing", {
+    title:"Finish timing", q:"How many days before or after the due date you finish.",
+    take:F.headline, ready:F.ready, chart: hist + dots,
+    foot: (F.estimated ? F.estimated + " of these completion dates are estimated from the last edit (finished before tracking began). " : "") + "Faded rows have fewer than 3 tasks.",
+    table: table(["Bucket","Tasks"], F.buckets.map(function(b){ return [b.label, b.count]; }))
+  });
+}
+
+function renderRhythm(I){
+  var Y = I.rhythm, series = [{name:"Due", color:T.neutral}, {name:"Finished", color:ACCENT}];
+  card("c-rhythm", {
+    title:"Weekly rhythm", q:"Tasks due vs. tasks finished on each day of the week (last 12 weeks).",
+    take:Y.headline, ready:Y.ready, legend: legend(series.map(function(s){ return [s.name, s.color]; })),
+    chart: columns(widthOf("c-rhythm"), Y.days.map(function(d){ return {label:d.label, values:[d.due, d.done], tip:d.label + "\nDue " + d.due + " · Finished " + d.done}; }), series, {height:160}),
+    foot: Y.estimated ? Y.estimated + " completion dates estimated from the last edit." : "",
+    table: table(["Day","Due","Finished"], Y.days.map(function(d){ return [d.label, d.due, d.done]; }))
+  });
+}
+
+function renderPushes(I){
+  var P = I.pushes, rows = P.by_type.map(function(b){
+    return {label:b.type, value:b.rate, color:typeColor(b.type), valueText:b.rate + "%", faded:b.few,
+            tip:b.type + ": " + b.pushed + " of " + plural(b.tasks, "task") + " pushed (" + plural(b.pushes, "push") + " total)"};
+  });
+  card("c-pushes", {
+    title:"Pushed back", q:"Share of each Type's tasks whose due date moved later.",
+    take:P.headline, ready:P.ready, chart: rows.length ? hbars(widthOf("c-pushes"), rows, {max:100}) : "",
+    foot:"Counted since tracking started.",
+    table: table(["Type","Pushed","Tasks"], P.by_type.map(function(b){ return [b.type, b.pushed, b.tasks]; }))
+  });
+}
+
+function renderPlanning(I){
+  var P = I.planning, w = widthOf("c-planning"), total = P.buckets.reduce(function(a,b){ return a + b.count; }, 0);
+  // ordered parts (short → long notice): one hue, light → dark
+  var shades = [0.35, 0.55, 0.78, 1];
+  var out = "", x = 0, h = 28;
+  if (total){
+    P.buckets.forEach(function(b, i){
+      var bw = (b.count / total) * w; if (!bw) return;
+      var pct = Math.round(100 * b.count / total), gap = x ? 2 : 0;
+      out += '<rect x="'+(x+gap)+'" y="0" width="'+Math.max(0, bw-gap)+'" height="'+h+'" rx="4" fill="'+ACCENT+'" opacity="'+shades[i]+'"/>';
+      if (bw > 34) out += txt(x + gap + 7, 18, pct + "%", {fill: DARK ? "#ffffff" : (shades[i] > .6 ? "#ffffff" : "#1f1f1f"), size:12, weight:600});
+      out += hit(x, 0, bw, h, b.label + " before due: " + plural(b.count, "task") + " (" + pct + "%)");
+      x += bw;
+    });
+  }
+  var leg = legend(P.buckets.map(function(b, i){ return [b.label, "color-mix(in srgb, " + ACCENT + " " + Math.round(shades[i]*100) + "%, transparent)"]; }));
+  card("c-planning", {
+    title:"Planning ahead", q:"How long before the due date tasks get added to Notion.",
+    take:P.headline, ready:P.ready, legend: leg, chart: total ? svg(w, h, out) : "",
+    table: table(["Notice","Tasks"], P.buckets.map(function(b){ return [b.label, b.count]; }))
+  });
+}
+
+function renderHeat(I){
+  var H = I.heatmap, w = widthOf("c-heat"), days = H.days;
+  var weeks = Math.ceil(days.length / 7), labelW = 26, top = 16;
+  var cell = Math.max(8, Math.min(16, Math.floor((w - labelW) / weeks) - 3)), gap = 3, step = cell + gap;
+  var h = top + 7 * step, out = "";
+  var levels = [0, 1, 2, 3, 4], op = [0, .35, .55, .78, 1];
+  function lvl(c){ if (!c) return 0; if (H.max <= 4) return Math.min(4, c); return Math.min(4, Math.ceil(4 * c / H.max)); }
+  ["Mon","","Wed","","Fri","","Sun"].forEach(function(d, i){ if (d) out += txt(0, top + i*step + cell - 2, d, {size:9.5, fill:T.faint}); });
+  var lastMonth = "";
+  days.forEach(function(d, i){
+    var col = Math.floor(i / 7), row = i % 7, x = labelW + col * step, y = top + row * step;
+    var l = lvl(d.count);
+    out += '<rect x="'+x+'" y="'+y+'" width="'+cell+'" height="'+cell+'" rx="2" fill="'+(l ? ACCENT : T.track)+'" opacity="'+(l ? op[l] : .45)+'"/>';
+    out += hit(x - 1, y - 1, step, step, fmtDay(d.date, {weekday:"short", month:"short", day:"numeric"}) + " — " + plural(d.count, "task") + " finished");
+    var m = fmtDay(d.date, {month:"short"});
+    if (row === 0 && m !== lastMonth){ out += txt(x, 10, m, {size:10, fill:T.faint}); lastMonth = m; }
+  });
+  var key = '<div class="legend" style="margin-top:8px">Less&nbsp;' + levels.map(function(l){
+    return '<i style="background:'+(l ? ACCENT : T.track)+';opacity:'+(l ? op[l] : .45)+';width:10px;height:10px;margin:0"></i>';
+  }).join("") + '&nbsp;More</div>';
+  card("c-heat", {
+    title:"Completion heatmap", q:"Tasks finished per day.", take:H.headline,
+    chart: svg(Math.max(w, labelW + weeks*step), h, out) + key,
+    foot: I.estimated_completions ? "Days before tracking began use estimated completion dates." : ""
+  });
+}
+
+// ---------- tooltip (hover on desktop, tap on touch) ----------
+var tip = el("tip");
+function showTip(e){
+  var t = e.target.closest && e.target.closest("[data-tip]");
+  if (!t){ tip.style.opacity = 0; return; }
+  tip.innerHTML = esc(t.getAttribute("data-tip")).replace(/\n/g, "<br>");
+  var x = e.clientX + 12, y = e.clientY + 12, r = tip.getBoundingClientRect();
+  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 12;
+  if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 12;
+  tip.style.left = x + "px"; tip.style.top = y + "px"; tip.style.opacity = 1;
+}
+document.addEventListener("mousemove", showTip);
+document.addEventListener("click", showTip);
+document.addEventListener("mouseleave", function(){ tip.style.opacity = 0; });
+
+// ---------- load + render ----------
+var DATA = null;
+function renderAll(){
+  if (!DATA) return;
+  renderTop(DATA);
+  var I = DATA.insights;
+  if (!I){ el("c-load").innerHTML = '<p class="take wait">No insights yet. They appear after the next dashboard run.</p>'; return; }
+  renderLoad(I); renderStale(I); renderBacklog(I); renderTiming(I); renderRhythm(I);
+  renderPushes(I); renderPlanning(I); renderHeat(I);
+}
+async function load(){
+  for (const u of ["data/stats.json", "data/stats.sample.json"]){
+    try { const res = await fetch(u, {cache:"no-store"}); if (res.ok){ DATA = await res.json(); break; } } catch(e){}
+  }
+  if (!DATA){ el("meta").textContent = "No data yet."; return; }
+  TYPE_COLORS = DATA.type_colors || {};
+  renderAll();
+}
+var rt; addEventListener("resize", function(){ clearTimeout(rt); rt = setTimeout(renderAll, 120); });
+load();
+</script>
+</body>
+</html>
