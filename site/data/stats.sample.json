@@ -1,17 +1,818 @@
 {
-  "generated_at": "2026-07-26T06:00:00-07:00",
-  "today": { "total": 3, "done": 1 },
-  "week": { "total": 7, "done": 4 },
-  "open_total": 12,
-  "by_type": { "academics": 5, "CS": 4, "personal": 3 },
-  "weeks": [
-    { "week": "2026-22", "total": 9,  "done": 8 },
-    { "week": "2026-23", "total": 12, "done": 11 },
-    { "week": "2026-24", "total": 7,  "done": 7 },
-    { "week": "2026-25", "total": 14, "done": 10 },
-    { "week": "2026-26", "total": 11, "done": 9 },
-    { "week": "2026-27", "total": 8,  "done": 6 },
-    { "week": "2026-28", "total": 13, "done": 5 },
-    { "week": "2026-29", "total": 7,  "done": 4 }
-  ]
+ "sample": true,
+ "generated_at": "2026-11-25T06:00:00-08:00",
+ "today": {
+  "total": 2,
+  "done": 1
+ },
+ "week": {
+  "total": 14,
+  "done": 4
+ },
+ "open_total": 23,
+ "by_type": {},
+ "weeks": [],
+ "type_colors": {
+  "academics": "blue",
+  "CS": "purple",
+  "personal": "green",
+  "extracurricular": "orange",
+  "scholarships": "pink"
+ },
+ "insights": {
+  "tracking_since": "2026-09-16",
+  "days_tracked": 71,
+  "estimated_completions": 0,
+  "load": {
+   "days": [
+    {
+     "date": "2026-11-25",
+     "label": "Today",
+     "count": 1,
+     "by_type": {
+      "extracurricular": 1
+     }
+    },
+    {
+     "date": "2026-11-26",
+     "label": "Thu",
+     "count": 5,
+     "by_type": {
+      "academics": 3,
+      "CS": 1,
+      "personal": 1
+     }
+    },
+    {
+     "date": "2026-11-27",
+     "label": "Fri",
+     "count": 0,
+     "by_type": {}
+    },
+    {
+     "date": "2026-11-28",
+     "label": "Sat",
+     "count": 3,
+     "by_type": {
+      "academics": 1,
+      "extracurricular": 1,
+      "CS": 1
+     }
+    },
+    {
+     "date": "2026-11-29",
+     "label": "Sun",
+     "count": 0,
+     "by_type": {}
+    },
+    {
+     "date": "2026-11-30",
+     "label": "Mon",
+     "count": 1,
+     "by_type": {
+      "academics": 1
+     }
+    },
+    {
+     "date": "2026-12-01",
+     "label": "Tue",
+     "count": 0,
+     "by_type": {}
+    }
+   ],
+   "pace": 1.18,
+   "overdue": 12,
+   "headline": "Thu is heavy: 5 due vs. your usual 1.2/day. Start some of it earlier."
+  },
+  "backlog": {
+   "daily": [
+    {
+     "date": "2026-10-01",
+     "open": 10
+    },
+    {
+     "date": "2026-10-02",
+     "open": 13
+    },
+    {
+     "date": "2026-10-03",
+     "open": 12
+    },
+    {
+     "date": "2026-10-04",
+     "open": 13
+    },
+    {
+     "date": "2026-10-05",
+     "open": 9
+    },
+    {
+     "date": "2026-10-06",
+     "open": 10
+    },
+    {
+     "date": "2026-10-07",
+     "open": 9
+    },
+    {
+     "date": "2026-10-08",
+     "open": 10
+    },
+    {
+     "date": "2026-10-09",
+     "open": 9
+    },
+    {
+     "date": "2026-10-10",
+     "open": 7
+    },
+    {
+     "date": "2026-10-11",
+     "open": 8
+    },
+    {
+     "date": "2026-10-12",
+     "open": 8
+    },
+    {
+     "date": "2026-10-13",
+     "open": 7
+    },
+    {
+     "date": "2026-10-14",
+     "open": 9
+    },
+    {
+     "date": "2026-10-15",
+     "open": 10
+    },
+    {
+     "date": "2026-10-16",
+     "open": 11
+    },
+    {
+     "date": "2026-10-17",
+     "open": 10
+    },
+    {
+     "date": "2026-10-18",
+     "open": 11
+    },
+    {
+     "date": "2026-10-19",
+     "open": 7
+    },
+    {
+     "date": "2026-10-20",
+     "open": 9
+    },
+    {
+     "date": "2026-10-21",
+     "open": 10
+    },
+    {
+     "date": "2026-10-22",
+     "open": 10
+    },
+    {
+     "date": "2026-10-23",
+     "open": 12
+    },
+    {
+     "date": "2026-10-24",
+     "open": 12
+    },
+    {
+     "date": "2026-10-25",
+     "open": 13
+    },
+    {
+     "date": "2026-10-26",
+     "open": 8
+    },
+    {
+     "date": "2026-10-27",
+     "open": 7
+    },
+    {
+     "date": "2026-10-28",
+     "open": 9
+    },
+    {
+     "date": "2026-10-29",
+     "open": 11
+    },
+    {
+     "date": "2026-10-30",
+     "open": 14
+    },
+    {
+     "date": "2026-10-31",
+     "open": 14
+    },
+    {
+     "date": "2026-11-01",
+     "open": 15
+    },
+    {
+     "date": "2026-11-02",
+     "open": 12
+    },
+    {
+     "date": "2026-11-03",
+     "open": 12
+    },
+    {
+     "date": "2026-11-04",
+     "open": 12
+    },
+    {
+     "date": "2026-11-05",
+     "open": 14
+    },
+    {
+     "date": "2026-11-06",
+     "open": 13
+    },
+    {
+     "date": "2026-11-07",
+     "open": 13
+    },
+    {
+     "date": "2026-11-08",
+     "open": 13
+    },
+    {
+     "date": "2026-11-09",
+     "open": 11
+    },
+    {
+     "date": "2026-11-10",
+     "open": 10
+    },
+    {
+     "date": "2026-11-11",
+     "open": 10
+    },
+    {
+     "date": "2026-11-12",
+     "open": 10
+    },
+    {
+     "date": "2026-11-13",
+     "open": 13
+    },
+    {
+     "date": "2026-11-14",
+     "open": 16
+    },
+    {
+     "date": "2026-11-15",
+     "open": 17
+    },
+    {
+     "date": "2026-11-16",
+     "open": 16
+    },
+    {
+     "date": "2026-11-17",
+     "open": 16
+    },
+    {
+     "date": "2026-11-18",
+     "open": 16
+    },
+    {
+     "date": "2026-11-19",
+     "open": 18
+    },
+    {
+     "date": "2026-11-20",
+     "open": 20
+    },
+    {
+     "date": "2026-11-21",
+     "open": 17
+    },
+    {
+     "date": "2026-11-22",
+     "open": 20
+    },
+    {
+     "date": "2026-11-23",
+     "open": 15
+    },
+    {
+     "date": "2026-11-24",
+     "open": 16
+    },
+    {
+     "date": "2026-11-25",
+     "open": 23
+    }
+   ],
+   "weeks": [
+    {
+     "week": "2026-10-05",
+     "added": 6,
+     "done": 10
+    },
+    {
+     "week": "2026-10-12",
+     "added": 13,
+     "done": 11
+    },
+    {
+     "week": "2026-10-19",
+     "added": 10,
+     "done": 9
+    },
+    {
+     "week": "2026-10-26",
+     "added": 8,
+     "done": 5
+    },
+    {
+     "week": "2026-11-02",
+     "added": 8,
+     "done": 10
+    },
+    {
+     "week": "2026-11-09",
+     "added": 11,
+     "done": 5
+    },
+    {
+     "week": "2026-11-16",
+     "added": 10,
+     "done": 12
+    },
+    {
+     "week": "2026-11-23",
+     "added": 12,
+     "done": 2
+    }
+   ],
+   "headline": "Backlog grew by 5 over the last 4 weeks: 37 added, 32 finished."
+  },
+  "stale": {
+   "count": 9,
+   "open": 23,
+   "by_type": {
+    "academics": 4,
+    "scholarships": 3,
+    "CS": 1,
+    "extracurricular": 1
+   },
+   "headline": "9 of 23 open tasks haven't moved in a week+, mostly academics."
+  },
+  "timing": {
+   "buckets": [
+    {
+     "label": "1 wk+ early",
+     "count": 0
+    },
+    {
+     "label": "3\u20136d early",
+     "count": 6
+    },
+    {
+     "label": "1\u20132d early",
+     "count": 30
+    },
+    {
+     "label": "Due day",
+     "count": 18
+    },
+    {
+     "label": "1\u20132d late",
+     "count": 18
+    },
+    {
+     "label": "3d+ late",
+     "count": 14
+    }
+   ],
+   "by_type": [
+    {
+     "type": "extracurricular",
+     "median": -1.5,
+     "n": 12,
+     "few": false
+    },
+    {
+     "type": "CS",
+     "median": -1,
+     "n": 19,
+     "few": false
+    },
+    {
+     "type": "academics",
+     "median": 0.0,
+     "n": 36,
+     "few": false
+    },
+    {
+     "type": "personal",
+     "median": 0.5,
+     "n": 12,
+     "few": false
+    },
+    {
+     "type": "scholarships",
+     "median": 1,
+     "n": 7,
+     "few": false
+    }
+   ],
+   "n": 86,
+   "estimated": 0,
+   "ready": true,
+   "headline": "You usually finish on the due date. Extracurricular: 2 days early; scholarships: 1 day late."
+  },
+  "rhythm": {
+   "days": [
+    {
+     "label": "Mon",
+     "due": 17,
+     "done": 9
+    },
+    {
+     "label": "Tue",
+     "due": 5,
+     "done": 10
+    },
+    {
+     "label": "Wed",
+     "due": 14,
+     "done": 4
+    },
+    {
+     "label": "Thu",
+     "due": 17,
+     "done": 4
+    },
+    {
+     "label": "Fri",
+     "due": 13,
+     "done": 11
+    },
+    {
+     "label": "Sat",
+     "due": 13,
+     "done": 11
+    },
+    {
+     "label": "Sun",
+     "due": 16,
+     "done": 37
+    }
+   ],
+   "n": 86,
+   "estimated": 0,
+   "ready": true,
+   "headline": "Sun is your strongest day (43% of finishes); Wed is the quietest. Weekends carry 56% of your work."
+  },
+  "pushes": {
+   "by_type": [
+    {
+     "type": "scholarships",
+     "tasks": 10,
+     "pushed": 3,
+     "pushes": 13,
+     "rate": 30,
+     "few": false
+    },
+    {
+     "type": "extracurricular",
+     "tasks": 16,
+     "pushed": 2,
+     "pushes": 4,
+     "rate": 12,
+     "few": false
+    },
+    {
+     "type": "academics",
+     "tasks": 45,
+     "pushed": 3,
+     "pushes": 3,
+     "rate": 7,
+     "few": false
+    },
+    {
+     "type": "personal",
+     "tasks": 15,
+     "pushed": 1,
+     "pushes": 1,
+     "rate": 7,
+     "few": false
+    },
+    {
+     "type": "CS",
+     "tasks": 23,
+     "pushed": 0,
+     "pushes": 0,
+     "rate": 0,
+     "few": false
+    }
+   ],
+   "total": 21,
+   "ready": true,
+   "headline": "Scholarships gets pushed back most: 30% of those tasks moved at least once."
+  },
+  "planning": {
+   "buckets": [
+    {
+     "label": "Same day",
+     "count": 7
+    },
+    {
+     "label": "1\u20132 days",
+     "count": 34
+    },
+    {
+     "label": "3\u20136 days",
+     "count": 43
+    },
+    {
+     "label": "1 week+",
+     "count": 25
+    }
+   ],
+   "n": 109,
+   "ready": true,
+   "headline": "38% of tasks get added 2 days or less before they're due. Median lead time: 3 days."
+  },
+  "heatmap": {
+   "start": "2026-09-21",
+   "days": [
+    {
+     "date": "2026-09-21",
+     "count": 0
+    },
+    {
+     "date": "2026-09-22",
+     "count": 0
+    },
+    {
+     "date": "2026-09-23",
+     "count": 0
+    },
+    {
+     "date": "2026-09-24",
+     "count": 1
+    },
+    {
+     "date": "2026-09-25",
+     "count": 1
+    },
+    {
+     "date": "2026-09-26",
+     "count": 3
+    },
+    {
+     "date": "2026-09-27",
+     "count": 4
+    },
+    {
+     "date": "2026-09-28",
+     "count": 1
+    },
+    {
+     "date": "2026-09-29",
+     "count": 3
+    },
+    {
+     "date": "2026-09-30",
+     "count": 1
+    },
+    {
+     "date": "2026-10-01",
+     "count": 0
+    },
+    {
+     "date": "2026-10-02",
+     "count": 2
+    },
+    {
+     "date": "2026-10-03",
+     "count": 2
+    },
+    {
+     "date": "2026-10-04",
+     "count": 4
+    },
+    {
+     "date": "2026-10-05",
+     "count": 0
+    },
+    {
+     "date": "2026-10-06",
+     "count": 2
+    },
+    {
+     "date": "2026-10-07",
+     "count": 1
+    },
+    {
+     "date": "2026-10-08",
+     "count": 1
+    },
+    {
+     "date": "2026-10-09",
+     "count": 2
+    },
+    {
+     "date": "2026-10-10",
+     "count": 1
+    },
+    {
+     "date": "2026-10-11",
+     "count": 3
+    },
+    {
+     "date": "2026-10-12",
+     "count": 3
+    },
+    {
+     "date": "2026-10-13",
+     "count": 0
+    },
+    {
+     "date": "2026-10-14",
+     "count": 1
+    },
+    {
+     "date": "2026-10-15",
+     "count": 1
+    },
+    {
+     "date": "2026-10-16",
+     "count": 1
+    },
+    {
+     "date": "2026-10-17",
+     "count": 1
+    },
+    {
+     "date": "2026-10-18",
+     "count": 4
+    },
+    {
+     "date": "2026-10-19",
+     "count": 0
+    },
+    {
+     "date": "2026-10-20",
+     "count": 0
+    },
+    {
+     "date": "2026-10-21",
+     "count": 1
+    },
+    {
+     "date": "2026-10-22",
+     "count": 0
+    },
+    {
+     "date": "2026-10-23",
+     "count": 1
+    },
+    {
+     "date": "2026-10-24",
+     "count": 2
+    },
+    {
+     "date": "2026-10-25",
+     "count": 5
+    },
+    {
+     "date": "2026-10-26",
+     "count": 1
+    },
+    {
+     "date": "2026-10-27",
+     "count": 0
+    },
+    {
+     "date": "2026-10-28",
+     "count": 0
+    },
+    {
+     "date": "2026-10-29",
+     "count": 0
+    },
+    {
+     "date": "2026-10-30",
+     "count": 0
+    },
+    {
+     "date": "2026-10-31",
+     "count": 0
+    },
+    {
+     "date": "2026-11-01",
+     "count": 4
+    },
+    {
+     "date": "2026-11-02",
+     "count": 2
+    },
+    {
+     "date": "2026-11-03",
+     "count": 1
+    },
+    {
+     "date": "2026-11-04",
+     "count": 0
+    },
+    {
+     "date": "2026-11-05",
+     "count": 1
+    },
+    {
+     "date": "2026-11-06",
+     "count": 1
+    },
+    {
+     "date": "2026-11-07",
+     "count": 1
+    },
+    {
+     "date": "2026-11-08",
+     "count": 4
+    },
+    {
+     "date": "2026-11-09",
+     "count": 1
+    },
+    {
+     "date": "2026-11-10",
+     "count": 1
+    },
+    {
+     "date": "2026-11-11",
+     "count": 0
+    },
+    {
+     "date": "2026-11-12",
+     "count": 0
+    },
+    {
+     "date": "2026-11-13",
+     "count": 0
+    },
+    {
+     "date": "2026-11-14",
+     "count": 1
+    },
+    {
+     "date": "2026-11-15",
+     "count": 2
+    },
+    {
+     "date": "2026-11-16",
+     "count": 1
+    },
+    {
+     "date": "2026-11-17",
+     "count": 1
+    },
+    {
+     "date": "2026-11-18",
+     "count": 0
+    },
+    {
+     "date": "2026-11-19",
+     "count": 0
+    },
+    {
+     "date": "2026-11-20",
+     "count": 3
+    },
+    {
+     "date": "2026-11-21",
+     "count": 0
+    },
+    {
+     "date": "2026-11-22",
+     "count": 7
+    },
+    {
+     "date": "2026-11-23",
+     "count": 0
+    },
+    {
+     "date": "2026-11-24",
+     "count": 2
+    },
+    {
+     "date": "2026-11-25",
+     "count": 0
+    }
+   ],
+   "max": 7,
+   "headline": "86 tasks finished on 43 of the last 66 days. Longest streak: 7 days."
+  }
+ }
 }
