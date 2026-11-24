@@ -1,5 +1,11 @@
-# Dashboard - build stats.json from Notion and publish the Pages chart.
+# Dashboard - snapshot tasks into the history, build stats.json, publish the Pages charts.
 # LA 06:00 => UTC 13:00 (PDT).
+#
+# History (title-free, hashed task records) lives on the `dashboard-history` branch so
+# habit charts can see how tasks changed over time. The branch is created on first run.
+#
+# Build and deploy are separate jobs: deploy-pages then always runs after the
+# github-pages artifact is fully registered (fixes "No artifacts named github-pages").
 name: Dashboard - Build & Deploy Pages
 on:
   schedule:
@@ -7,31 +13,60 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-  pages: write
-  id-token: write
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false  # never cut off a run halfway through saving history
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+    permissions:
+      contents: write  # push the history branch
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
+      - name: Check out task history
+        run: |
+          if git ls-remote --exit-code --heads origin dashboard-history >/dev/null; then
+            git fetch --depth 1 origin dashboard-history
+            git worktree add history FETCH_HEAD
+          else
+            echo "No history yet - starting a fresh one."
+            git worktree add --orphan -b dashboard-history history
+          fi
       - name: Generate dashboard data
         run: python scripts/build_dashboard.py
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_TASKS_DB: ${{ secrets.NOTION_TASKS_DB }}
+      - name: Save task history
+        working-directory: history
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add history.json
+          if git diff --cached --quiet; then
+            echo "History unchanged."
+          else
+            git commit -q -m "history: snapshot $(TZ=America/Los_Angeles date +%F)"
+            git push origin HEAD:refs/heads/dashboard-history
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
       - id: deploy
         uses: actions/deploy-pages@v4
