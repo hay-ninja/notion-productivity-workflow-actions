@@ -22,12 +22,13 @@ fine for daily jobs.
 | C gcal sync | tasks (with due dates) | tasks `GCal Event ID`, Google Calendar | — |
 | D weekly review | tasks + internships + settings toggle | — | ntfy (if on) |
 | tomorrow's top 3 | tasks (due <= tomorrow) | — | ntfy |
-| dashboard | tasks (aggregates) | `site/data/stats.json` -> Pages | — |
+| dashboard | tasks (all, for history + aggregates) | `history.json` on `dashboard-history`, `site/data/stats.json` -> Pages | — |
 
 ## Chart embed flow
 
 ```
-tasks DB --(Action aggregates)--> site/data/stats.json
+tasks DB --(daily snapshot)--> history.json (dashboard-history branch)
+        --(Action aggregates + insights)--> site/data/stats.json
         --(Pages deploy)--> https://<user>.github.io/<repo>/
         --(/embed block)--> Notion Home
 ```

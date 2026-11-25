@@ -54,17 +54,27 @@ photos, then footer links.
 - **Tomorrow's top 3 — 6:00 PM.** The most useful part of the old email digest,
   kept as its own job: the top 3 unfinished tasks due tomorrow or earlier, pushed to
   your phone via ntfy.
-- **Dashboard — 6:00 AM.** Publishes aggregate counts as a chart on GitHub Pages,
-  embeddable in Notion.
+- **Dashboard — 6:00 AM.** Snapshots every task into a daily history, then publishes
+  two embeddable Pages views:
+  - `index.html` — the compact progress rings (today / this week / open).
+  - `insights.html` — the full page: next-7-days load vs. your usual pace, overdue and
+    stale counts, backlog trend, finish timing (days early/late, by Type), weekly
+    rhythm, pushed-back due dates, planning lead time, and a completion heatmap.
+    Each card leads with a one-line takeaway; habit cards say "collecting data" until
+    there's enough history (about 2–3 weeks).
 - **Validate (CI).** Runs on every push: scripts compile, YAML parses, no `.env`
   committed.
 
 ## Privacy
 Data stays in Notion. The repo stores code, not data. Secrets live in GitHub Actions
-Secrets. Only anonymized counts are ever published to Pages.
+Secrets. Only anonymized counts are ever published to Pages. The task history on the
+`dashboard-history` branch holds no titles and no raw Notion IDs — just a short hash,
+dates, status and Type/Course tags.
 
 ## Known limits
 - Calendar sync is one-way and never deletes events.
-- Rings undercount tasks created without a template.
+- Completion and push-back dates are tracked to the day (one snapshot each morning).
+  Tasks finished before tracking began get their completion day estimated from their
+  last edit; the page footnotes how many.
 - Cron is UTC and doesn't shift for daylight saving (drifts 1h in winter).
 - Notion's free plan allows one chart per workspace.

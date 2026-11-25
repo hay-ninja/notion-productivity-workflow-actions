@@ -37,7 +37,7 @@ either). it's its own ping now.
 .
 |-- scripts/            Python for each job + shared Notion helper
 |-- .github/workflows/  one YAML per job (crons in UTC) + validate.yml
-|-- site/               GitHub Pages dashboard (index.html + generated data/)
+|-- site/               GitHub Pages: index.html (rings), insights.html (full page), data/
 |-- docs/               FEATURES, SETUP, ARCHITECTURE, NOTION-SCHEMA, TIPS
 |-- .env.example        every secret the scripts read (no real values)
 `-- requirements.txt

@@ -93,6 +93,11 @@ live. To keep one off, comment out its `schedule:` block.
 Settings → Pages → Source: **GitHub Actions**. After the Dashboard run, your chart is
 at `https://<you>.github.io/<repo>/`. In Notion, `/embed` that URL.
 
+For the full insights page, embed `https://<you>.github.io/<repo>/insights.html` and
+drag the embed taller. Add `?bg=RRGGBB` to match a coloured block (e.g. `?bg=1f2b3a`
+for the navy callout; Notion dark `191919` is the default, `ffffff` for light mode).
+To preview locally: `python scripts/make_sample_stats.py`, then serve `site/`.
+
 ## Troubleshooting
 
 | Symptom | Likely cause |
